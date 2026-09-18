@@ -1,0 +1,38 @@
+[
+  {
+    "email": "maple@example.com",
+    "password": "Demo1234!",
+    "businessName": "Maple Street Diner",
+    "contactName": "Dana Whitfield",
+    "phone": "(515) 555-0198",
+    "addressLine1": "212 Maple St",
+    "city": "Ankeny",
+    "state": "IA",
+    "postalCode": "50023",
+    "status": "APPROVED"
+  },
+  {
+    "email": "riverbend@example.com",
+    "password": "Demo1234!",
+    "businessName": "Riverbend Grocery",
+    "contactName": "Marcus Lee",
+    "phone": "(319) 555-0133",
+    "addressLine1": "88 River Rd",
+    "city": "Cedar Rapids",
+    "state": "IA",
+    "postalCode": "52401",
+    "status": "APPROVED"
+  },
+  {
+    "email": "lincoln@example.com",
+    "password": "Demo1234!",
+    "businessName": "Lincoln High School Cafeteria",
+    "contactName": "Priya Natarajan",
+    "phone": "(402) 555-0177",
+    "addressLine1": "1500 Lincoln Ave",
+    "city": "Omaha",
+    "state": "NE",
+    "postalCode": "68102",
+    "status": "PENDING"
+  }
+]

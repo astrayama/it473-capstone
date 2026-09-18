@@ -1,0 +1,92 @@
+// Cloud SQL (PostgreSQL) holds everything transactional: customers, stock levels, orders.
+// The product catalog itself (names, descriptions, prices, photos) lives in Firestore;
+// InventoryItem.productId points at the Firestore product document id.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum CustomerStatus {
+  PENDING   // registered, waiting for staff approval before they can see prices / order
+  APPROVED
+  SUSPENDED
+}
+
+enum OrderStatus {
+  PENDING_PAYMENT
+  PAID
+  CONFIRMED
+  OUT_FOR_DELIVERY
+  DELIVERED
+  CANCELLED
+}
+
+model Customer {
+  id           String         @id @default(cuid())
+  firebaseUid  String         @unique
+  email        String         @unique
+  businessName String
+  contactName  String
+  phone        String?
+  addressLine1 String
+  addressLine2 String?
+  city         String
+  state        String
+  postalCode   String
+  status       CustomerStatus @default(PENDING)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  orders       Order[]
+
+  @@index([businessName])
+  @@index([status])
+}
+
+model InventoryItem {
+  productId      String   @id // Firestore products/{id}
+  sku            String   @unique
+  quantityOnHand Int      @default(0) // cases in the warehouse
+  reorderPoint   Int      @default(0) // flag as "low stock" at or below this
+  binLocation    String?
+  updatedAt      DateTime @updatedAt
+}
+
+model Order {
+  id                      String      @id @default(cuid())
+  orderNumber             Int         @unique @default(autoincrement())
+  customerId              String
+  customer                Customer    @relation(fields: [customerId], references: [id])
+  status                  OrderStatus @default(PENDING_PAYMENT)
+  subtotalCents           Int
+  totalCents              Int
+  stripeCheckoutSessionId String?     @unique
+  stripePaymentIntentId   String?
+  requestedDeliveryDate   DateTime?
+  notes                   String?
+  items                   OrderItem[]
+  createdAt               DateTime    @default(now())
+  updatedAt               DateTime    @updatedAt
+
+  @@index([customerId, createdAt])
+  @@index([status])
+}
+
+model OrderItem {
+  id             String @id @default(cuid())
+  orderId        String
+  order          Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId      String // Firestore product id at time of order
+  sku            String
+  name           String // snapshot so history survives catalog edits
+  packSize       String
+  casePriceCents Int
+  quantity       Int
+  lineTotalCents Int
+
+  @@index([orderId])
+}

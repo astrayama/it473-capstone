@@ -1,0 +1,90 @@
+# Cloud Build pipeline: build image -> push to Artifact Registry -> run DB migrations
+# as a Cloud Run Job -> deploy the web service to Cloud Run.
+#
+# One-time setup: scripts/setup-gcp.sh <PROJECT_ID>
+# Manual deploy:  gcloud builds submit --config cloudbuild.yaml --substitutions=_ADMIN_EMAILS=you@example.com
+# Or connect the GitHub repo as a Cloud Build trigger on the main branch.
+
+substitutions:
+  _REGION: us-central1
+  _AR_REPO: foodhub
+  _SERVICE: foodhub-web
+  _MIGRATE_JOB: foodhub-migrate
+  _SQL_INSTANCE: foodhub-pg
+  _BUCKET: ${PROJECT_ID}-product-images
+  _ADMIN_EMAILS: admin@prairiecrestfoods.example
+  _RUNTIME_SA: foodhub-run@${PROJECT_ID}.iam.gserviceaccount.com
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+  dynamicSubstitutions: true
+
+steps:
+  # 1. Build the web image (default Dockerfile target) and the migrator image.
+  - id: build-web
+    name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - --tag=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_AR_REPO}/web:${COMMIT_SHA}
+      - --tag=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_AR_REPO}/web:latest
+      - .
+
+  - id: build-migrator
+    name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - --target=migrator
+      - --tag=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_AR_REPO}/migrator:${COMMIT_SHA}
+      - --tag=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_AR_REPO}/migrator:latest
+      - .
+
+  # 2. Push both images.
+  - id: push
+    name: gcr.io/cloud-builders/docker
+    args: [push, --all-tags, "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_AR_REPO}/web"]
+  - id: push-migrator
+    name: gcr.io/cloud-builders/docker
+    args: [push, --all-tags, "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_AR_REPO}/migrator"]
+
+  # 3. Apply Prisma migrations against Cloud SQL via a Cloud Run Job.
+  - id: migrate
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    entrypoint: gcloud
+    args:
+      - run
+      - jobs
+      - deploy
+      - ${_MIGRATE_JOB}
+      - --image=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_AR_REPO}/migrator:${COMMIT_SHA}
+      - --region=${_REGION}
+      - --service-account=${_RUNTIME_SA}
+      - --set-cloudsql-instances=${PROJECT_ID}:${_REGION}:${_SQL_INSTANCE}
+      - --set-secrets=DATABASE_URL=DATABASE_URL:latest
+      - --max-retries=0
+      - --execute-now
+      - --wait
+
+  # 4. Deploy the web service.
+  - id: deploy
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - ${_SERVICE}
+      - --image=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_AR_REPO}/web:${COMMIT_SHA}
+      - --region=${_REGION}
+      - --platform=managed
+      - --allow-unauthenticated
+      - --port=8080
+      - --service-account=${_RUNTIME_SA}
+      - --add-cloudsql-instances=${PROJECT_ID}:${_REGION}:${_SQL_INSTANCE}
+      - --set-env-vars=GOOGLE_CLOUD_PROJECT=${PROJECT_ID},FIREBASE_PROJECT_ID=${PROJECT_ID},FIREBASE_AUTH_DOMAIN=${PROJECT_ID}.firebaseapp.com,GCS_BUCKET=${_BUCKET},ADMIN_EMAILS=${_ADMIN_EMAILS}
+      - --set-secrets=DATABASE_URL=DATABASE_URL:latest,FIREBASE_API_KEY=FIREBASE_API_KEY:latest,FIREBASE_APP_ID=FIREBASE_APP_ID:latest,STRIPE_SECRET_KEY=STRIPE_SECRET_KEY:latest,STRIPE_WEBHOOK_SECRET=STRIPE_WEBHOOK_SECRET:latest,SITE_URL=SITE_URL:latest
+      - --min-instances=0
+      - --max-instances=4
+      - --memory=1Gi
+
+images:
+  - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_AR_REPO}/web:${COMMIT_SHA}
+  - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_AR_REPO}/migrator:${COMMIT_SHA}
