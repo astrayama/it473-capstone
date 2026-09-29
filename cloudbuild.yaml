@@ -11,7 +11,7 @@ substitutions:
   _SERVICE: foodhub-web
   _MIGRATE_JOB: foodhub-migrate
   _SQL_INSTANCE: foodhub-pg
-  _BUCKET: ${PROJECT_ID}-product-images
+  _BUCKET: ${PROJECT_ID}-media
   _ADMIN_EMAILS: admin@prairiecrestfoods.example
   _RUNTIME_SA: foodhub-run@${PROJECT_ID}.iam.gserviceaccount.com
 

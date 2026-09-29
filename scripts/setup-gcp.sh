@@ -4,7 +4,7 @@
 #   ./scripts/setup-gcp.sh <PROJECT_ID> [REGION]
 #
 # Creates (idempotently): required APIs, Artifact Registry repo, Firestore database,
-# Cloud Storage bucket (public read), Cloud SQL Postgres instance + database + user,
+# a private Cloud Storage bucket for product photos, Cloud SQL Postgres instance + database + user,
 # Secret Manager secrets, the Cloud Run runtime service account, and IAM bindings
 # for Cloud Build. Prints the manual Firebase steps at the end.
 #
@@ -17,7 +17,7 @@ AR_REPO="foodhub"
 SQL_INSTANCE="foodhub-pg"
 SQL_DB="foodhub"
 SQL_USER="app"
-BUCKET="${PROJECT_ID}-product-images"
+BUCKET="${PROJECT_ID}-media"
 RUNTIME_SA_NAME="foodhub-run"
 RUNTIME_SA="${RUNTIME_SA_NAME}@${PROJECT_ID}.iam.gserviceaccount.com"
 
@@ -41,11 +41,10 @@ log "Firestore database (Native mode)"
 gcloud firestore databases describe --database='(default)' >/dev/null 2>&1 || \
   gcloud firestore databases create --location="$REGION" --database='(default)'
 
-log "Cloud Storage bucket: gs://$BUCKET (public read for product photos)"
+log "Cloud Storage bucket: gs://$BUCKET (private; the app serves photos through /media)"
 gcloud storage buckets describe "gs://$BUCKET" >/dev/null 2>&1 || \
-  gcloud storage buckets create "gs://$BUCKET" --location="$REGION" --uniform-bucket-level-access
-gcloud storage buckets add-iam-policy-binding "gs://$BUCKET" \
-  --member=allUsers --role=roles/storage.objectViewer >/dev/null
+  gcloud storage buckets create "gs://$BUCKET" --location="$REGION" \
+    --uniform-bucket-level-access --public-access-prevention
 
 log "Cloud SQL instance: $SQL_INSTANCE (this takes several minutes)"
 if ! gcloud sql instances describe "$SQL_INSTANCE" >/dev/null 2>&1; then
@@ -101,7 +100,7 @@ Google Cloud resources are ready in project: $PROJECT_ID ($REGION)
 
   Cloud SQL connection name : $CONNECTION_NAME
   Database user / password  : $SQL_USER / $DB_PASSWORD   (also stored in secret DATABASE_URL)
-  Photo bucket              : gs://$BUCKET
+  Photo bucket (private)    : gs://$BUCKET
   Runtime service account   : $RUNTIME_SA
 
 Manual steps that gcloud cannot do for you:
