@@ -7,7 +7,6 @@ import opentype from "opentype.js";
 const repo = process.argv[2];
 const load = (f) => opentype.parse(fs.readFileSync(new URL(`./fonts/${f}`, import.meta.url)).buffer);
 const serifItalic = load("CormorantGaramondLight-Italic.ttf");
-const serif = load("CormorantGaramondLight-Regular.ttf");
 const sans = load("InterTight-Regular.ttf");
 
 const r2 = (n) => Math.round(n * 100) / 100;
@@ -26,7 +25,6 @@ function textPath(font, text, size, x, y, tracking = 0) {
     if (i < glyphs.length - 1) adv += font.getKerningValue(g, glyphs[i + 1]) * scale + tracking;
     cursor += adv;
   });
-  const whole = font.getPath(text, x, y, size); // bbox only (ignores tracking)
   return { d: parts.join(""), width: cursor - x };
 }
 
