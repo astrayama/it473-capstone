@@ -149,10 +149,10 @@ export function ProductForm({ initial, categories }: Props) {
   const shownImage = photoPreview ?? (removePhoto ? null : form.imageUrl);
 
   return (
-    <form onSubmit={onSubmit} className="grid gap-6 lg:grid-cols-[1fr_300px]">
-      <div className="card space-y-4">
-        <h2 className="font-semibold">Product details</h2>
-        <div className="grid gap-4 sm:grid-cols-2">
+    <form onSubmit={onSubmit} className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_18rem]">
+      <div className="card space-y-6">
+        <h2 className="text-title-m">Details</h2>
+        <div className="grid gap-5 sm:grid-cols-2">
           <div className="sm:col-span-2">
             <label className="label" htmlFor="name">Product name</label>
             <input id="name" className="input" required value={form.name} onChange={(e) => update("name", e.target.value)} />
@@ -169,7 +169,7 @@ export function ProductForm({ initial, categories }: Props) {
               placeholder="4001"
               aria-describedby="sku-hint"
             />
-            <p id="sku-hint" className="mt-1 text-xs text-neutral-500">
+            <p id="sku-hint" className="hint">
               {isEdit
                 ? "The SKU is the product's catalog id and can't be changed."
                 : docId
@@ -198,8 +198,8 @@ export function ProductForm({ initial, categories }: Props) {
             <input id="price" type="number" min={0} step="0.01" className="input" required value={priceDollars} onChange={(e) => setPriceDollars(e.target.value)} />
           </div>
           <div className="flex items-end">
-            <label className="flex items-center gap-2 text-sm">
-              <input type="checkbox" checked={form.active} onChange={(e) => update("active", e.target.checked)} />
+            <label className="flex items-center gap-2.5 py-2.5 text-sm">
+              <input type="checkbox" className="size-4 accent-[var(--accent-ink)]" checked={form.active} onChange={(e) => update("active", e.target.checked)} />
               Visible in the catalog
             </label>
           </div>
@@ -209,8 +209,8 @@ export function ProductForm({ initial, categories }: Props) {
           </div>
         </div>
 
-        <h2 className="pt-2 font-semibold">Stock</h2>
-        <div className="grid gap-4 sm:grid-cols-3">
+        <h2 className="rule pt-6 text-title-m">Stock</h2>
+        <div className="grid gap-5 sm:grid-cols-3">
           <div>
             <label className="label" htmlFor="qty">On hand</label>
             <input id="qty" type="number" min={0} className="input" value={form.quantityOnHand} onChange={(e) => update("quantityOnHand", Number(e.target.value))} />
@@ -226,7 +226,7 @@ export function ProductForm({ initial, categories }: Props) {
         </div>
 
         {error && <p className="alert-error" role="alert">{error}</p>}
-        <div className="flex flex-wrap gap-3 pt-2">
+        <div className="flex flex-wrap gap-3 border-t border-line pt-6">
           <button type="submit" disabled={busy} className="btn-primary">{busy ? "Saving…" : isEdit ? "Save changes" : "Add product"}</button>
           <button type="button" onClick={() => router.push("/admin/products")} className="btn-secondary">Cancel</button>
           {isEdit &&
@@ -238,13 +238,13 @@ export function ProductForm({ initial, categories }: Props) {
         </div>
       </div>
 
-      <aside className="card h-fit space-y-3">
-        <h2 className="font-semibold">Photo</h2>
-        <ProductImage src={shownImage} alt="" aspect="4/5" sizes="300px" />
-        <input type="file" accept="image/jpeg,image/png,image/webp" onChange={(e) => choosePhoto(e.target.files?.[0] ?? null)} className="text-sm" />
-        <p className="text-xs text-neutral-500">JPEG, PNG or WebP up to 5 MB. Uploaded to the media bucket when you save.</p>
+      <aside className="card space-y-4 lg:sticky lg:top-8">
+        <h2 className="text-title-m">Photo</h2>
+        <ProductImage src={shownImage} alt="" aspect="4/5" sizes="300px" className="rounded-sm" />
+        <input type="file" accept="image/jpeg,image/png,image/webp" aria-label="Choose a photo" onChange={(e) => choosePhoto(e.target.files?.[0] ?? null)} className="block w-full text-sm text-fg-2 file:mr-3 file:rounded-full file:border file:border-line-strong file:bg-transparent file:px-4 file:py-2 file:text-sm file:text-fg hover:file:border-accent-ink" />
+        <p className="hint">JPEG, PNG or WebP up to 5 MB. Uploaded to the media bucket when you save.</p>
         {(form.imageUrl || photo) && !removePhoto && (
-          <button type="button" onClick={() => { choosePhoto(null); setRemovePhoto(true); }} className="text-xs text-red-600 hover:underline">
+          <button type="button" onClick={() => { choosePhoto(null); setRemovePhoto(true); }} className="link text-xs text-danger-ink">
             Remove photo
           </button>
         )}

@@ -1,8 +1,11 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getProduct } from "@/lib/catalog";
 import { listCategories } from "@/lib/categories";
 import { tryGetInventoryMap } from "@/lib/inventory";
 import { ProductForm } from "@/components/admin/product-form";
+import { AdminPageHeader } from "@/components/admin/admin-page-header";
+import { ArrowLeft } from "@/components/icons";
 
 export default async function EditProductPage(props: PageProps<"/admin/products/[id]">) {
   const { id } = await props.params;
@@ -12,9 +15,16 @@ export default async function EditProductPage(props: PageProps<"/admin/products/
   const stock = inventory?.get(product.id);
 
   return (
-    <div className="space-y-4">
-      <h2 className="text-xl font-semibold">Edit: {product.name}</h2>
-      {!inventory && <p className="alert-info">Stock levels are unavailable right now; saving will update the catalog only.</p>}
+    <>
+      <Link href="/admin/products" className="meta mb-6 inline-flex items-center gap-2 hover:text-fg">
+        <ArrowLeft width={14} height={14} /> All products
+      </Link>
+      <AdminPageHeader
+        eyebrow={product.sku}
+        title={product.name}
+        actions={product.active ? <span className="badge badge-dot badge-success">Visible</span> : <span className="badge badge-dot badge-neutral">Archived</span>}
+      />
+      {!inventory && <p className="alert-warning mb-6">Stock levels are unavailable right now; saving will update the catalog only.</p>}
       <ProductForm
         categories={categories.map((c) => ({ id: c.id, name: c.name }))}
         initial={{
@@ -23,6 +33,6 @@ export default async function EditProductPage(props: PageProps<"/admin/products/
           quantityOnHand: stock?.quantityOnHand ?? 0, reorderPoint: stock?.reorderPoint ?? 0, binLocation: stock?.binLocation ?? "",
         }}
       />
-    </div>
+    </>
   );
 }

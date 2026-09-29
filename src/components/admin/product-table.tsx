@@ -3,6 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { formatCents, perUnit } from "@/lib/format";
+import { ProductImage } from "@/components/product-image";
+import { Search } from "@/components/icons";
 
 export interface ProductRow {
   id: string;
@@ -12,6 +14,7 @@ export interface ProductRow {
   unitOfMeasure: string;
   priceCents: number;
   active: boolean;
+  imageUrl: string | null;
   /** null = no stock row yet, or the stock database is unavailable. */
   quantityOnHand: number | null;
   reorderPoint: number | null;
@@ -25,53 +28,68 @@ export function ProductTable({ rows }: { rows: ProductRow[] }) {
 
   return (
     <div className="card p-0">
-      <div className="flex items-center gap-3 p-4">
-        <input className="input max-w-sm" placeholder="Search by name, SKU, category…" value={q} onChange={(e) => setQ(e.target.value)} />
-        <span className="text-sm text-neutral-500">{filtered.length} of {rows.length}</span>
+      <div className="flex flex-wrap items-center gap-4 p-5">
+        <div className="relative w-full max-w-sm">
+          <Search className="pointer-events-none absolute top-1/2 left-3.5 -translate-y-1/2 text-fg-3" width={16} height={16} />
+          <input className="input pl-10" placeholder="Search by name, SKU, category" aria-label="Search products" value={q} onChange={(e) => setQ(e.target.value)} />
+        </div>
+        <span className="meta numeric">{filtered.length} of {rows.length}</span>
       </div>
-      <table className="table">
-        <thead>
-          <tr>
-            <th>SKU</th>
-            <th>Product</th>
-            <th>Category</th>
-            <th>Price</th>
-            <th>On hand</th>
-            <th>Status</th>
-            <th />
-          </tr>
-        </thead>
-        <tbody>
-          {filtered.map((r) => {
-            const low = r.quantityOnHand !== null && r.reorderPoint !== null && r.quantityOnHand <= r.reorderPoint;
-            return (
-              <tr key={r.id}>
-                <td className="font-mono text-xs">{r.sku}</td>
-                <td className="font-medium">{r.name}</td>
-                <td>{r.categoryLabel}</td>
-                <td>
-                  {r.priceCents > 0 ? formatCents(r.priceCents) : "—"}{" "}
-                  <span className="text-xs text-neutral-500">{perUnit(r.unitOfMeasure)}</span>
-                </td>
-                <td className={low ? "font-semibold text-amber-700" : ""}>{r.quantityOnHand ?? "—"}</td>
-                <td>
-                  <span className={`badge ${r.active ? "bg-brand-100 text-brand-800" : "bg-neutral-200 text-neutral-700"}`}>
-                    {r.active ? "Visible" : "Archived"}
-                  </span>
-                </td>
-                <td className="text-right">
-                  <Link href={`/admin/products/${encodeURIComponent(r.id)}`} className="btn-secondary btn-sm">Edit</Link>
-                </td>
-              </tr>
-            );
-          })}
-          {filtered.length === 0 && (
+      <div className="table-wrap">
+        <table className="table">
+          <thead>
             <tr>
-              <td colSpan={7} className="py-8 text-center text-neutral-500">No products match.</td>
+              <th>Product</th>
+              <th>SKU</th>
+              <th>Category</th>
+              <th>Price</th>
+              <th>On hand</th>
+              <th>Status</th>
+              <th><span className="sr-only">Edit</span></th>
             </tr>
-          )}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {filtered.map((r) => {
+              const low = r.quantityOnHand !== null && r.reorderPoint !== null && r.quantityOnHand <= r.reorderPoint;
+              return (
+                <tr key={r.id}>
+                  <td>
+                    <div className="flex items-center gap-3">
+                      <ProductImage src={r.imageUrl} alt="" aspect="1/1" sizes="40px" className="w-10 shrink-0 rounded-xs" />
+                      <span className="font-medium">{r.name}</span>
+                    </div>
+                  </td>
+                  <td className="numeric text-xs tracking-[0.06em] text-fg-2">{r.sku}</td>
+                  <td>{r.categoryLabel}</td>
+                  <td className="whitespace-nowrap">
+                    {r.priceCents > 0 ? formatCents(r.priceCents) : "—"} <span className="meta">{perUnit(r.unitOfMeasure)}</span>
+                  </td>
+                  <td>
+                    {r.quantityOnHand === null ? (
+                      <span className="meta">—</span>
+                    ) : low ? (
+                      <span className="badge badge-dot badge-warning numeric">{r.quantityOnHand} · low</span>
+                    ) : (
+                      <span className="numeric">{r.quantityOnHand}</span>
+                    )}
+                  </td>
+                  <td>
+                    <span className={`badge badge-dot ${r.active ? "badge-success" : "badge-neutral"}`}>{r.active ? "Visible" : "Archived"}</span>
+                  </td>
+                  <td className="text-right">
+                    <Link href={`/admin/products/${encodeURIComponent(r.id)}`} className="btn-secondary btn-sm">Edit</Link>
+                  </td>
+                </tr>
+              );
+            })}
+            {filtered.length === 0 && (
+              <tr>
+                <td colSpan={7} className="meta py-10 text-center">No products match.</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
