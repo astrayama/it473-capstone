@@ -21,11 +21,11 @@ export function Hero({ photo, eyebrow, title, lede, actions, facts = [] }: Props
   return (
     <section className="relative -mt-[var(--header-h)] flex min-h-[max(40rem,100svh)] flex-col justify-end overflow-hidden">
       {/* Phones: a poster (photo on top, copy beneath). Desktop: photo on the right two-thirds. */}
-      <div className="hero-media absolute inset-x-0 top-0 h-[30rem] lg:inset-0 lg:left-[24%] lg:h-auto">
-        <Photo photo={photo} eager sizes="(min-width: 1024px) 76vw, 100vw" className="absolute inset-0" imgClassName="kenburns" decorative />
+      <div className="hero-media absolute inset-x-0 top-0 h-[30rem] lg:inset-0 lg:left-[36%] lg:h-auto xl:left-[26%]">
+        <Photo photo={photo} eager sizes="(min-width: 1280px) 74vw, (min-width: 1024px) 64vw, 100vw" className="absolute inset-0" imgClassName="kenburns" decorative />
         <div className="absolute inset-0 bg-[linear-gradient(0deg,var(--bg)_0%,rgb(14_12_10/0)_55%),linear-gradient(180deg,rgb(14_12_10/0.6)_0%,rgb(14_12_10/0)_28%)] lg:hidden" />
       </div>
-      <div className="absolute inset-0 hidden bg-[linear-gradient(90deg,var(--bg)_24%,rgb(14_12_10/0.75)_34%,rgb(14_12_10/0)_56%)] lg:block" />
+      <div className="absolute inset-0 hidden bg-[linear-gradient(90deg,var(--bg)_36%,rgb(14_12_10/0.7)_46%,rgb(14_12_10/0)_64%)] lg:block xl:bg-[linear-gradient(90deg,var(--bg)_26%,rgb(14_12_10/0.75)_36%,rgb(14_12_10/0)_56%)]" />
       <div className="absolute inset-0 hidden bg-[linear-gradient(0deg,var(--bg)_0%,rgb(14_12_10/0.7)_12%,rgb(14_12_10/0)_30%),linear-gradient(180deg,rgb(14_12_10/0.65)_0%,rgb(14_12_10/0)_18%)] lg:block" />
 
       <div className="container-page relative pt-[22rem] pb-12 md:pb-16 lg:pt-[calc(var(--header-h)+4rem)]">
