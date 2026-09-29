@@ -1,4 +1,4 @@
-import { formatCents, formatDate, formatDateTime, orderNumber } from "@/lib/format";
+import { formatCents, formatDate, formatDateTime, orderNumber, perUnit } from "@/lib/format";
 import { OrderStatusBadge } from "@/components/order-status-badge";
 import type { OrderWithItems } from "@/lib/orders";
 
@@ -28,14 +28,14 @@ export function OrderSummary({ order, showCustomer = false }: { order: OrderWith
       )}
       <table className="table">
         <thead>
-          <tr><th>Item</th><th>Case price</th><th>Cases</th><th className="text-right">Total</th></tr>
+          <tr><th>Item</th><th>Price</th><th>Qty</th><th className="text-right">Total</th></tr>
         </thead>
         <tbody>
           {order.items.map((i) => (
             <tr key={i.id}>
               <td>
                 <div className="font-medium">{i.name}</div>
-                <div className="text-xs text-neutral-500">{i.packSize} · SKU {i.sku}</div>
+                <div className="text-xs text-neutral-500">{perUnit(i.packSize)} · {i.sku}</div>
               </td>
               <td>{formatCents(i.casePriceCents)}</td>
               <td>{i.quantity}</td>

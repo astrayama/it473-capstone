@@ -32,3 +32,17 @@ export const customerStatusLabels: Record<string, string> = {
 export function orderNumber(n: number): string {
   return `#${String(n).padStart(5, "0")}`;
 }
+
+/** "dry-goods" -> "Dry Goods". */
+export function titleCase(value: string): string {
+  return value
+    .split(/[-_\s]+/)
+    .filter(Boolean)
+    .map((w) => w[0].toUpperCase() + w.slice(1))
+    .join(" ");
+}
+
+/** "case" -> "per case". */
+export function perUnit(unit: string | null | undefined): string {
+  return `per ${unit?.trim() || "case"}`;
+}

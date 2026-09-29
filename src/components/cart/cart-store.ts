@@ -8,26 +8,42 @@ import { useMemo, useSyncExternalStore } from "react";
  */
 export interface CartItem {
   productId: string;
-  slug: string;
   sku: string;
   name: string;
-  packSize: string;
+  unitOfMeasure: string;
   category: string;
-  casePriceCents: number;
+  priceCents: number;
   imageUrl: string | null;
   quantity: number;
 }
 
-const STORAGE_KEY = "pcf-cart-v1";
+const STORAGE_KEY = "pcf-cart-v2";
+/** Carts saved before the Firestore `catalog` schema; their fields no longer line up. */
+const LEGACY_KEYS = ["pcf-cart-v1"];
 const EMPTY: CartItem[] = [];
 const listeners = new Set<() => void>();
 let cache: CartItem[] | null = null;
 
+function isCartItem(value: unknown): value is CartItem {
+  const v = value as Partial<CartItem> | null;
+  return (
+    typeof v?.productId === "string" &&
+    typeof v.sku === "string" &&
+    typeof v.name === "string" &&
+    typeof v.unitOfMeasure === "string" &&
+    typeof v.priceCents === "number" &&
+    typeof v.quantity === "number" &&
+    v.quantity > 0
+  );
+}
+
 function read(): CartItem[] {
   if (cache) return cache;
   try {
+    LEGACY_KEYS.forEach((k) => window.localStorage.removeItem(k));
     const raw = window.localStorage.getItem(STORAGE_KEY);
-    cache = raw ? (JSON.parse(raw) as CartItem[]) : EMPTY;
+    const parsed: unknown = raw ? JSON.parse(raw) : [];
+    cache = Array.isArray(parsed) ? parsed.filter(isCartItem) : EMPTY;
   } catch {
     cache = EMPTY;
   }
@@ -91,7 +107,7 @@ export function useCart() {
     () => ({
       items,
       count: items.reduce((n, i) => n + i.quantity, 0),
-      subtotalCents: items.reduce((n, i) => n + i.casePriceCents * i.quantity, 0),
+      subtotalCents: items.reduce((n, i) => n + i.priceCents * i.quantity, 0),
       ...cartActions,
     }),
     [items],

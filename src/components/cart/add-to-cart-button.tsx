@@ -5,7 +5,8 @@ import { useCart, type CartItem } from "@/components/cart/cart-store";
 
 interface Props {
   item: Omit<CartItem, "quantity">;
-  maxQuantity: number;
+  /** Units on hand, or null when stock is unknown (the server re-checks at checkout). */
+  maxQuantity: number | null;
   showQuantity?: boolean;
 }
 
@@ -13,7 +14,8 @@ export function AddToCartButton({ item, maxQuantity, showQuantity = false }: Pro
   const cart = useCart();
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
-  const disabled = maxQuantity <= 0;
+  const max = maxQuantity ?? 999;
+  const disabled = max <= 0 || item.priceCents <= 0;
 
   function onAdd() {
     cart.add(item, qty);
@@ -27,15 +29,15 @@ export function AddToCartButton({ item, maxQuantity, showQuantity = false }: Pro
         <input
           type="number"
           min={1}
-          max={maxQuantity}
+          max={max}
           value={qty}
-          onChange={(e) => setQty(Math.max(1, Math.min(maxQuantity, Number(e.target.value) || 1)))}
+          onChange={(e) => setQty(Math.max(1, Math.min(max, Number(e.target.value) || 1)))}
           className="input w-20"
-          aria-label="Cases"
+          aria-label={`Quantity (${item.unitOfMeasure})`}
         />
       )}
       <button type="button" onClick={onAdd} disabled={disabled} className="btn-primary">
-        {disabled ? "Out of stock" : added ? "Added ✓" : "Add to cart"}
+        {disabled ? (item.priceCents <= 0 ? "Unavailable" : "Out of stock") : added ? "Added ✓" : "Add to cart"}
       </button>
     </div>
   );

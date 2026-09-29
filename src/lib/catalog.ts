@@ -1,70 +1,115 @@
 import "server-only";
-import { FieldPath } from "firebase-admin/firestore";
+import { cache } from "react";
+import { FieldPath, FieldValue, Timestamp } from "firebase-admin/firestore";
 import { firestore } from "@/lib/firebase/admin";
-import type { CategoryId, StorageType } from "@/config/categories";
+import { productImageUrl } from "@/lib/media";
+import { skuFromId } from "@/lib/sku";
+import { UserFacingError } from "@/lib/errors";
 
 /**
- * Product catalog, stored in Firestore collection `products`.
+ * Product catalog, stored in Firestore collection `catalog`. The document shape is the
+ * team's shared contract, so this module maps it to the app's `Product` and back:
+ *
+ *   catalog/{sku-1001} {
+ *     name, description, category,        // category = categories/{id}
+ *     basePrice,                          // USD, e.g. 34.99 (double) or 45 (integer)
+ *     unitOfMeasure,                      // "case" | "pack" | "bag" …
+ *     imagePaths: ["products/sku-1001/images/primary.jpg"],   // media bucket objects
+ *     isActive, createdAt, updatedAt      // Firestore Timestamps
+ *   }
+ *
  * Stock levels are NOT here; they live in Cloud SQL (see inventory.ts).
  */
 export interface Product {
+  /** Firestore document id, e.g. "sku-1001". */
   id: string;
+  /** Display SKU, e.g. "SKU-1001". */
   sku: string;
   name: string;
-  slug: string;
   description: string;
-  category: CategoryId;
-  brand: string;
-  packSize: string; // e.g. "12 × 32 oz"
-  unitsPerCase: number;
-  casePriceCents: number;
-  storage: StorageType;
+  category: string;
+  unitOfMeasure: string;
+  /** Price per unit of measure in cents. 0 means the price is missing and it can't be ordered. */
+  priceCents: number;
+  /** Object path of the primary photo in the media bucket. */
+  imagePath: string | null;
+  /** Same-origin URL for the primary photo (served by /media). */
   imageUrl: string | null;
   active: boolean;
   createdAt: string;
   updatedAt: string;
 }
 
-export type ProductInput = Omit<Product, "id" | "slug" | "createdAt" | "updatedAt">;
-
-const COLLECTION = "products";
-
-export function slugify(value: string): string {
-  return value
-    .toLowerCase()
-    .normalize("NFKD")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 60);
+export interface ProductInput {
+  name: string;
+  description: string;
+  category: string;
+  unitOfMeasure: string;
+  priceCents: number;
+  active: boolean;
 }
 
-function toProduct(id: string, data: FirebaseFirestore.DocumentData): Product {
-  return {
-    id,
-    sku: data.sku ?? "",
-    name: data.name ?? "",
-    slug: data.slug ?? id,
-    description: data.description ?? "",
-    category: data.category,
-    brand: data.brand ?? "",
-    packSize: data.packSize ?? "",
-    unitsPerCase: Number(data.unitsPerCase ?? 1),
-    casePriceCents: Number(data.casePriceCents ?? 0),
-    storage: data.storage ?? "ambient",
-    imageUrl: data.imageUrl ?? null,
-    active: data.active !== false,
-    createdAt: data.createdAt ?? "",
-    updatedAt: data.updatedAt ?? "",
-  };
-}
+const COLLECTION = "catalog";
+const DOC_ID = /^[A-Za-z0-9_-][A-Za-z0-9._-]{0,127}$/;
 
 function col() {
   return firestore().collection(COLLECTION);
 }
 
+function toIso(value: unknown): string {
+  if (value instanceof Timestamp) return value.toDate().toISOString();
+  if (value instanceof Date) return value.toISOString();
+  if (typeof value === "string") return value;
+  return "";
+}
+
+function toProduct(id: string, data: FirebaseFirestore.DocumentData): Product {
+  const cents = Math.round(Number(data.basePrice) * 100);
+  const paths: unknown[] = Array.isArray(data.imagePaths) ? data.imagePaths : [];
+  const imagePath = typeof paths[0] === "string" ? paths[0] : null;
+  const updatedAt = toIso(data.updatedAt);
+  return {
+    id,
+    sku: skuFromId(id),
+    name: String(data.name ?? ""),
+    description: String(data.description ?? ""),
+    category: String(data.category ?? ""),
+    unitOfMeasure: String(data.unitOfMeasure || "case"),
+    priceCents: Number.isFinite(cents) && cents > 0 ? cents : 0,
+    imagePath,
+    imageUrl: productImageUrl(imagePath, updatedAt),
+    active: data.isActive !== false,
+    createdAt: toIso(data.createdAt),
+    updatedAt,
+  };
+}
+
+/** App fields -> the team's Firestore field names. Only the keys present are written. */
+function toFirestore(input: Partial<ProductInput>): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  if (input.name !== undefined) out.name = input.name;
+  if (input.description !== undefined) out.description = input.description;
+  if (input.category !== undefined) out.category = input.category;
+  if (input.unitOfMeasure !== undefined) out.unitOfMeasure = input.unitOfMeasure;
+  if (input.priceCents !== undefined) out.basePrice = input.priceCents / 100;
+  if (input.active !== undefined) out.isActive = input.active;
+  return out;
+}
+
+function grpcCode(err: unknown): number | undefined {
+  return (err as { code?: number } | null)?.code;
+}
+
+/** Every product, sorted by name. The catalog is small, so it is read whole once per request. */
+const allProducts = cache(async (): Promise<Product[]> => {
+  const snap = await col().get();
+  return snap.docs
+    .map((d) => toProduct(d.id, d.data()))
+    .sort((a, b) => a.name.localeCompare(b.name));
+});
+
 export async function listProducts(opts: { includeInactive?: boolean } = {}): Promise<Product[]> {
-  const snap = await col().orderBy("name").get();
-  const all = snap.docs.map((d) => toProduct(d.id, d.data()));
+  const all = await allProducts();
   return opts.includeInactive ? all : all.filter((p) => p.active);
 }
 
@@ -79,28 +124,20 @@ export async function searchProducts(opts: {
   if (opts.category) items = items.filter((p) => p.category === opts.category);
   if (opts.q) {
     const q = opts.q.trim().toLowerCase();
-    items = items.filter((p) =>
-      [p.name, p.brand, p.sku, p.description].some((f) => f.toLowerCase().includes(q)),
-    );
+    items = items.filter((p) => [p.name, p.sku, p.description].some((f) => f.toLowerCase().includes(q)));
   }
   return items;
 }
 
-export async function getProduct(id: string): Promise<Product | null> {
+export const getProduct = cache(async (id: string): Promise<Product | null> => {
+  if (!DOC_ID.test(id)) return null;
   const doc = await col().doc(id).get();
   return doc.exists ? toProduct(doc.id, doc.data()!) : null;
-}
-
-export async function getProductBySlug(slug: string): Promise<Product | null> {
-  const snap = await col().where("slug", "==", slug).limit(1).get();
-  if (snap.empty) return null;
-  const d = snap.docs[0];
-  return toProduct(d.id, d.data());
-}
+});
 
 export async function getProductsByIds(ids: string[]): Promise<Map<string, Product>> {
   const result = new Map<string, Product>();
-  const unique = [...new Set(ids)];
+  const unique = [...new Set(ids)].filter((id) => DOC_ID.test(id));
   // Firestore `in` queries take at most 30 values per call.
   for (let i = 0; i < unique.length; i += 30) {
     const chunk = unique.slice(i, i + 30);
@@ -115,29 +152,56 @@ export async function countProducts(): Promise<number> {
   return snap.data().count;
 }
 
-async function uniqueSlug(base: string, sku: string): Promise<string> {
-  const slug = slugify(base) || slugify(sku) || "product";
-  const existing = await getProductBySlug(slug);
-  if (!existing) return slug;
-  return `${slug}-${slugify(sku)}`;
-}
-
-export async function createProduct(input: ProductInput, id?: string): Promise<Product> {
-  const now = new Date().toISOString();
-  const slug = await uniqueSlug(input.name, input.sku);
-  const docRef = id ? col().doc(id) : col().doc();
-  const data = { ...input, slug, createdAt: now, updatedAt: now };
-  await docRef.set(data);
-  return toProduct(docRef.id, data);
-}
-
-export async function updateProduct(id: string, patch: Partial<ProductInput>): Promise<Product> {
-  const docRef = col().doc(id);
-  await docRef.set({ ...patch, updatedAt: new Date().toISOString() }, { merge: true });
-  const doc = await docRef.get();
+/** Creates `catalog/{id}`. Fails atomically (409) if that SKU is already taken. */
+export async function createProduct(id: string, input: ProductInput): Promise<Product> {
+  const ref = col().doc(id);
+  try {
+    await ref.create({
+      ...toFirestore(input),
+      imagePaths: [],
+      createdAt: FieldValue.serverTimestamp(),
+      updatedAt: FieldValue.serverTimestamp(),
+    });
+  } catch (err) {
+    if (grpcCode(err) === 6) throw new UserFacingError(`SKU ${skuFromId(id)} is already in the catalog.`, 409);
+    throw err;
+  }
+  const doc = await ref.get();
   return toProduct(doc.id, doc.data()!);
 }
 
-export async function deleteProduct(id: string): Promise<void> {
-  await col().doc(id).delete();
+/** Updates only the contract fields given; any other fields on the document are kept. */
+export async function updateProduct(id: string, patch: Partial<ProductInput>): Promise<Product> {
+  const ref = col().doc(id);
+  try {
+    await ref.update({ ...toFirestore(patch), updatedAt: FieldValue.serverTimestamp() });
+  } catch (err) {
+    if (grpcCode(err) === 5) throw new UserFacingError("Product not found.", 404);
+    throw err;
+  }
+  const doc = await ref.get();
+  return toProduct(doc.id, doc.data()!);
+}
+
+/** Hides a product from the storefront. Documents are never deleted from the shared catalog. */
+export function archiveProduct(id: string): Promise<Product> {
+  return updateProduct(id, { active: false });
+}
+
+export function restoreProduct(id: string): Promise<Product> {
+  return updateProduct(id, { active: true });
+}
+
+/** Sets (or clears, with null) the primary photo. Any additional imagePaths are kept. */
+export async function setProductImage(id: string, path: string | null): Promise<Product> {
+  const ref = col().doc(id);
+  await firestore().runTransaction(async (tx) => {
+    const snap = await tx.get(ref);
+    if (!snap.exists) throw new UserFacingError("Product not found.", 404);
+    const current: unknown[] = Array.isArray(snap.get("imagePaths")) ? snap.get("imagePaths") : [];
+    const rest = current.slice(1).filter((p): p is string => typeof p === "string" && p !== path);
+    tx.update(ref, { imagePaths: path ? [path, ...rest] : rest, updatedAt: FieldValue.serverTimestamp() });
+  });
+  const doc = await ref.get();
+  return toProduct(doc.id, doc.data()!);
 }

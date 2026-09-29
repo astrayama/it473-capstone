@@ -52,8 +52,15 @@ export function canOrder(session: Session | null): boolean {
   return session?.customer?.status === "APPROVED";
 }
 
+/** Dev-only escape hatch so the price UI can be reviewed before sign-in works. Ignored in production. */
+function devShowsPricesToGuests(): boolean {
+  return process.env.NODE_ENV !== "production" && process.env.SHOW_PRICES_TO_GUESTS === "1";
+}
+
 export function canSeePrices(session: Session | null): boolean {
-  return siteConfig.showPricesToGuests || canOrder(session) || Boolean(session?.isAdmin);
+  return (
+    siteConfig.showPricesToGuests || devShowsPricesToGuests() || canOrder(session) || Boolean(session?.isAdmin)
+  );
 }
 
 export async function requireSession(nextPath: string): Promise<Session> {

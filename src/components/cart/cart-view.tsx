@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useCart } from "@/components/cart/cart-store";
 import { ProductImage } from "@/components/product-image";
-import { formatCents } from "@/lib/format";
+import { formatCents, perUnit } from "@/lib/format";
 
 interface Props {
   signedIn: boolean;
@@ -61,8 +61,8 @@ export function CartView({ signedIn, canOrder, accountStatus, stripeConfigured, 
           <thead>
             <tr>
               <th>Item</th>
-              <th>Case price</th>
-              <th>Cases</th>
+              <th>Price</th>
+              <th>Qty</th>
               <th className="text-right">Total</th>
               <th />
             </tr>
@@ -72,14 +72,14 @@ export function CartView({ signedIn, canOrder, accountStatus, stripeConfigured, 
               <tr key={item.productId}>
                 <td>
                   <div className="flex items-center gap-3">
-                    <ProductImage src={item.imageUrl} category={item.category} alt="" size={48} />
+                    <ProductImage src={item.imageUrl} alt="" aspect="1/1" sizes="48px" className="w-12 shrink-0" />
                     <div>
-                      <Link href={`/catalog/${item.slug}`} className="font-medium hover:underline">{item.name}</Link>
-                      <div className="text-xs text-neutral-500">{item.packSize} · SKU {item.sku}</div>
+                      <Link href={`/catalog/${encodeURIComponent(item.productId)}`} className="font-medium hover:underline">{item.name}</Link>
+                      <div className="text-xs text-neutral-500">{perUnit(item.unitOfMeasure)} · {item.sku}</div>
                     </div>
                   </div>
                 </td>
-                <td>{formatCents(item.casePriceCents)}</td>
+                <td>{formatCents(item.priceCents)}</td>
                 <td>
                   <input
                     type="number"
@@ -87,10 +87,10 @@ export function CartView({ signedIn, canOrder, accountStatus, stripeConfigured, 
                     value={item.quantity}
                     onChange={(e) => cart.setQuantity(item.productId, Number(e.target.value) || 0)}
                     className="input w-20"
-                    aria-label={`Cases of ${item.name}`}
+                    aria-label={`Quantity of ${item.name}`}
                   />
                 </td>
-                <td className="text-right font-medium">{formatCents(item.casePriceCents * item.quantity)}</td>
+                <td className="text-right font-medium">{formatCents(item.priceCents * item.quantity)}</td>
                 <td className="text-right">
                   <button type="button" onClick={() => cart.remove(item.productId)} className="text-xs text-red-600 hover:underline">
                     Remove

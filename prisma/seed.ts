@@ -2,11 +2,12 @@
  * Seeds demo data. Run with `npm run seed` (needs .env, the Cloud SQL proxy, and
  * Application Default Credentials for Firebase/Firestore).
  *
- *   - seed/products.json  -> Firestore `products` + Cloud SQL `InventoryItem`
+ *   - Firestore `catalog` (read only) -> Cloud SQL `InventoryItem` rows for any product
+ *     that isn't tracked yet. The catalog itself is owned by the team and is never written here.
  *   - seed/customers.json -> Firebase Auth users + Cloud SQL `Customer`
  *   - ADMIN_EMAILS        -> Firebase Auth staff users (password: SEED_ADMIN_PASSWORD)
  *
- * Safe to re-run: products are keyed by a slug of their name, customers by email.
+ * Safe to re-run: existing stock rows keep their counts; customers are keyed by email.
  * This script is standalone (it does not import from src/lib, which is server-only).
  */
 import "dotenv/config";
@@ -17,21 +18,6 @@ import { getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient, type CustomerStatus } from "../src/generated/prisma/client";
-
-interface SeedProduct {
-  sku: string;
-  name: string;
-  category: string;
-  brand: string;
-  packSize: string;
-  unitsPerCase: number;
-  casePrice: number;
-  storage: string;
-  description: string;
-  quantityOnHand: number;
-  reorderPoint: number;
-  binLocation?: string;
-}
 
 interface SeedCustomer {
   email: string;
@@ -47,49 +33,32 @@ interface SeedCustomer {
   status: CustomerStatus;
 }
 
-const slugify = (v: string) =>
-  v.toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 60);
+/** Starting stock for catalog items that have no InventoryItem row yet. */
+const DEFAULT_STOCK = Number(process.env.SEED_DEFAULT_STOCK ?? 40);
+const DEFAULT_REORDER_POINT = 8;
 
 function readJson<T>(file: string): T {
   return JSON.parse(readFileSync(path.join(process.cwd(), "seed", file), "utf8")) as T;
 }
 
 async function main() {
-  const app = getApps()[0] ?? initializeApp({ projectId: process.env.FIREBASE_PROJECT_ID ?? process.env.GOOGLE_CLOUD_PROJECT });
+  const projectId = process.env.FIREBASE_PROJECT_ID || process.env.GOOGLE_CLOUD_PROJECT || "it473-capstone-project";
+  const app = getApps()[0] ?? initializeApp({ projectId });
   const firestore = getFirestore(app);
   const auth = getAuth(app);
   const prisma = new PrismaClient({ adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL! }) });
 
-  // ---- Products (Firestore) + stock (Cloud SQL) --------------------------
-  const products = readJson<SeedProduct[]>("products.json");
-  const now = new Date().toISOString();
-  for (const p of products) {
-    const id = slugify(p.name);
-    await firestore.collection("products").doc(id).set(
-      {
-        sku: p.sku,
-        name: p.name,
-        slug: id,
-        description: p.description,
-        category: p.category,
-        brand: p.brand,
-        packSize: p.packSize,
-        unitsPerCase: p.unitsPerCase,
-        casePriceCents: Math.round(p.casePrice * 100),
-        storage: p.storage,
-        imageUrl: null,
-        active: true,
-        createdAt: now,
-        updatedAt: now,
-      },
-      { merge: true },
-    );
+  // ---- Stock rows (Cloud SQL) for the Firestore catalog -----------------
+  const catalog = await firestore.collection("catalog").get();
+  for (const doc of catalog.docs) {
+    const sku = doc.id.toUpperCase(); // matches skuFromId() in src/lib/sku.ts
+    const before = await prisma.inventoryItem.findUnique({ where: { productId: doc.id } });
     await prisma.inventoryItem.upsert({
-      where: { productId: id },
-      create: { productId: id, sku: p.sku, quantityOnHand: p.quantityOnHand, reorderPoint: p.reorderPoint, binLocation: p.binLocation ?? null },
-      update: { sku: p.sku, quantityOnHand: p.quantityOnHand, reorderPoint: p.reorderPoint, binLocation: p.binLocation ?? null },
+      where: { productId: doc.id },
+      create: { productId: doc.id, sku, quantityOnHand: DEFAULT_STOCK, reorderPoint: DEFAULT_REORDER_POINT },
+      update: { sku },
     });
-    console.log(`product  ${p.sku.padEnd(10)} ${p.name}`);
+    console.log(`stock    ${sku.padEnd(10)} ${String(doc.get("name") ?? "")} ${before ? "(kept)" : `(created: ${DEFAULT_STOCK})`}`);
   }
 
   // ---- Customers (Firebase Auth + Cloud SQL) -----------------------------

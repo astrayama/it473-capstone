@@ -23,6 +23,29 @@ export async function getInventoryMap(productIds?: string[]): Promise<Map<string
   return new Map(rows.map((r) => [r.productId, r]));
 }
 
+/**
+ * Storefront variant of getInventoryMap: resolves to null instead of throwing (or hanging)
+ * when Cloud SQL is unavailable, so catalog pages still render from Firestore with the
+ * stock badge hidden. "No row" (-> out of stock) is different from null ("unknown").
+ */
+export async function tryGetInventoryMap(
+  productIds: string[],
+  timeoutMs = 1500,
+): Promise<Map<string, InventoryItem> | null> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<null>((resolve) => {
+    timer = setTimeout(() => resolve(null), timeoutMs);
+  });
+  try {
+    return await Promise.race([getInventoryMap(productIds), timeout]);
+  } catch (err) {
+    console.warn("Inventory unavailable, showing catalog without stock:", (err as Error).message);
+    return null;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 export async function upsertInventory(
   productId: string,
   sku: string,

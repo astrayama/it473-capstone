@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { siteConfig } from "@/config/site";
+import { FIREBASE_AUTH_DOMAIN, GCP_PROJECT_ID } from "@/config/gcp";
 import { getSession } from "@/lib/auth";
 import { FirebaseProvider } from "@/components/providers/firebase-provider";
 import { SiteHeader } from "@/components/site-header";
@@ -18,8 +19,8 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   const session = await getSession();
   const firebaseConfig = {
     apiKey: process.env.FIREBASE_API_KEY ?? "",
-    authDomain: process.env.FIREBASE_AUTH_DOMAIN ?? "",
-    projectId: process.env.FIREBASE_PROJECT_ID ?? process.env.GOOGLE_CLOUD_PROJECT ?? "",
+    authDomain: FIREBASE_AUTH_DOMAIN,
+    projectId: GCP_PROJECT_ID,
     appId: process.env.FIREBASE_APP_ID ?? "",
   };
 

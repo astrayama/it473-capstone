@@ -30,23 +30,25 @@ export async function createOrderFromCart(
 
   for (const line of lines) {
     const product = products.get(line.productId);
-    if (!product || !product.active) {
+    if (!product || !product.active || product.priceCents <= 0) {
       problems.push(`An item in your cart is no longer available.`);
       continue;
     }
     const stock = inventory.get(product.id)?.quantityOnHand ?? 0;
     if (stock < line.quantity) {
-      problems.push(`${product.name}: only ${stock} case(s) available.`);
+      problems.push(`${product.name}: only ${stock} ${product.unitOfMeasure}(s) available.`);
       continue;
     }
+    // OrderItem columns predate the Firestore `catalog` schema: `packSize` holds the unit
+    // of measure and `casePriceCents` the price per unit. (No migration needed.)
     items.push({
       productId: product.id,
       sku: product.sku,
       name: product.name,
-      packSize: product.packSize,
-      casePriceCents: product.casePriceCents,
+      packSize: product.unitOfMeasure,
+      casePriceCents: product.priceCents,
       quantity: line.quantity,
-      lineTotalCents: product.casePriceCents * line.quantity,
+      lineTotalCents: product.priceCents * line.quantity,
     });
   }
 

@@ -6,7 +6,9 @@ const styles: Record<StockLevel, { label: string; cls: string }> = {
   out: { label: "Out of stock", cls: "bg-neutral-200 text-neutral-700" },
 };
 
-export function StockBadge({ level }: { level: StockLevel }) {
+/** Stock pill. Renders nothing when stock is unknown (stock database unavailable). */
+export function StockBadge({ level }: { level: StockLevel | null }) {
+  if (!level) return null;
   const s = styles[level];
   return <span className={`badge ${s.cls}`}>{s.label}</span>;
 }

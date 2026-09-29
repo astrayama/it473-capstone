@@ -1,9 +1,13 @@
 import Link from "next/link";
 import { siteConfig } from "@/config/site";
-import { categories } from "@/config/categories";
-import { ProductImage } from "@/components/product-image";
+import { listCategories, type Category } from "@/lib/categories";
 
-export default function HomePage() {
+export default async function HomePage() {
+  // The home page should still render if Firestore is briefly unreachable.
+  const categories: Category[] = await listCategories().catch((err) => {
+    console.error("Categories unavailable:", err);
+    return [];
+  });
   return (
     <div className="space-y-14">
       <section className="grid items-center gap-8 md:grid-cols-2">
@@ -18,20 +22,13 @@ export default function HomePage() {
             <Link href="/register" className="btn-secondary">Apply for a wholesale account</Link>
           </div>
         </div>
-        <div className="grid grid-cols-3 gap-3">
-          {categories.slice(0, 6).map((c) => (
-            <Link key={c.id} href={`/catalog?category=${c.id}`} className="block">
-              <ProductImage src={null} category={c.id} alt={c.name} size={160} className="w-full" />
-            </Link>
-          ))}
-        </div>
       </section>
 
       <section>
         <h2 className="mb-4 text-2xl font-semibold">Shop by category</h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {categories.map((c) => (
-            <Link key={c.id} href={`/catalog?category=${c.id}`} className="card transition hover:border-brand-300">
+            <Link key={c.id} href={`/catalog?category=${encodeURIComponent(c.id)}`} className="card transition hover:border-brand-300">
               <div className="font-semibold text-brand-800">{c.name}</div>
               <p className="mt-1 text-sm text-neutral-600">{c.description}</p>
             </Link>
