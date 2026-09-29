@@ -1,66 +1,457 @@
 @import "tailwindcss";
 
+/* ==========================================================================
+   Prairie Crest Foods — "Harvest Noir" design system
+   Single source of truth for tokens. Two themes:
+     noir     — the storefront (dark, cinematic)          [data-theme="noir"]
+     daylight — the staff admin (light, calm, data-dense)  [data-theme="daylight"]
+   Raw tokens live on the theme selectors; Tailwind reads them through
+   `@theme inline`, so utilities like bg-surface follow whichever theme wraps them.
+   ========================================================================== */
+
+:root,
+[data-theme="noir"] {
+  color-scheme: dark;
+  --bg: #0e0c0a;
+  --surface: #15120f;
+  --surface-2: #1c1813;
+  --surface-3: #25201a;
+  --fg: #f2eadb;
+  --fg-2: #bfb3a1;
+  --fg-3: #a89c8a;
+  --line: rgb(242 234 219 / 0.12);
+  --line-strong: rgb(242 234 219 / 0.24);
+  --accent: #c9a45c;
+  --accent-hover: #ddbe7f;
+  --on-accent: #17130e;
+  --accent-ink: #c9a45c;
+  --accent-wash: rgb(201 164 92 / 0.12);
+  --danger: #8e2f1e;
+  --on-danger: #f2eadb;
+  --danger-ink: #e08a74;
+  --danger-wash: rgb(224 138 116 / 0.12);
+  --success-ink: #9dbf8a;
+  --success-wash: rgb(157 191 138 / 0.12);
+  --warning-ink: #e39a4f;
+  --warning-wash: rgb(227 154 79 / 0.12);
+  --info-ink: #9fb7c8;
+  --info-wash: rgb(159 183 200 / 0.12);
+  --focus: #ddbe7f;
+  --input-bg: #1c1813;
+  --glass: rgb(14 12 10 / 0.72);
+  --elev-card: 0 0 0 1px var(--line);
+  --elev-lift: 0 32px 64px -32px rgb(0 0 0 / 0.85), 0 0 0 1px var(--line-strong);
+  --elev-glow: 0 0 0 1px rgb(201 164 92 / 0.4), 0 18px 48px -18px rgb(201 164 92 / 0.45);
+}
+
+[data-theme="daylight"] {
+  color-scheme: light;
+  --bg: #f6f2ea;
+  --surface: #fffdf8;
+  --surface-2: #fbf8f2;
+  --surface-3: #efe8dc;
+  --fg: #1b1712;
+  --fg-2: #4f463a;
+  --fg-3: #6b6152;
+  --line: rgb(27 23 18 / 0.12);
+  --line-strong: rgb(27 23 18 / 0.24);
+  --accent: #1b1712;
+  --accent-hover: #3a3128;
+  --on-accent: #f6f2ea;
+  --accent-ink: #7a5c22;
+  --accent-wash: rgb(122 92 34 / 0.1);
+  --danger: #8e2f1e;
+  --on-danger: #fffdf8;
+  --danger-ink: #9a3220;
+  --danger-wash: rgb(154 50 32 / 0.08);
+  --success-ink: #3f6b34;
+  --success-wash: rgb(63 107 52 / 0.1);
+  --warning-ink: #8a5a12;
+  --warning-wash: rgb(138 90 18 / 0.1);
+  --info-ink: #35607d;
+  --info-wash: rgb(53 96 125 / 0.1);
+  --focus: #7a5c22;
+  --input-bg: #fffdf8;
+  --glass: rgb(246 242 234 / 0.82);
+  --elev-card: 0 1px 2px rgb(27 23 18 / 0.05), 0 0 0 1px var(--line);
+  --elev-lift: 0 18px 40px -24px rgb(27 23 18 / 0.35), 0 0 0 1px var(--line-strong);
+  --elev-glow: 0 0 0 1px rgb(122 92 34 / 0.35), 0 12px 32px -16px rgb(122 92 34 / 0.35);
+}
+
+/* Motion tokens (theme-independent). */
+:root {
+  --dur-fast: 160ms;
+  --dur-base: 320ms;
+  --dur-slow: 700ms;
+  --dur-cinema: 1400ms;
+  --header-h: 4.5rem;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-fg: var(--fg);
+  --color-fg-2: var(--fg-2);
+  --color-fg-3: var(--fg-3);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-on-accent: var(--on-accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-wash: var(--accent-wash);
+  --color-danger: var(--danger);
+  --color-on-danger: var(--on-danger);
+  --color-danger-ink: var(--danger-ink);
+  --color-danger-wash: var(--danger-wash);
+  --color-success-ink: var(--success-ink);
+  --color-success-wash: var(--success-wash);
+  --color-warning-ink: var(--warning-ink);
+  --color-warning-wash: var(--warning-wash);
+  --color-info-ink: var(--info-ink);
+  --color-info-wash: var(--info-wash);
+  --shadow-card: var(--elev-card);
+  --shadow-lift: var(--elev-lift);
+  --shadow-glow: var(--elev-glow);
+  --font-display: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
+  --font-sans: var(--font-inter-tight), "Inter Tight", ui-sans-serif, system-ui, sans-serif;
+}
+
 @theme {
-  --color-brand-50: #f0f7f2;
-  --color-brand-100: #dcece0;
-  --color-brand-200: #b9d9c2;
-  --color-brand-300: #8fbf9e;
-  --color-brand-500: #3f9463;
-  --color-brand-600: #2f7d4f;
-  --color-brand-700: #25633f;
-  --color-brand-800: #1d4d32;
-  --color-cream: #faf7f0;
-  --color-ink: #1f2a1f;
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --radius-xs: 2px;
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-cinema: cubic-bezier(0.65, 0, 0.35, 1);
+  --tracking-eyebrow: 0.22em;
+  --tracking-label: 0.14em;
+  /* Type scale — display sizes are fluid between phone and desktop. */
+  --text-display-xl: clamp(3.25rem, 1.6rem + 6.4vw, 6rem);
+  --text-display-xl--line-height: 0.95;
+  --text-display-l: clamp(2.75rem, 1.6rem + 4.4vw, 4.5rem);
+  --text-display-l--line-height: 1;
+  --text-display-m: clamp(2.25rem, 1.5rem + 2.8vw, 3.25rem);
+  --text-display-m--line-height: 1.05;
+  --text-display-s: clamp(1.875rem, 1.4rem + 1.6vw, 2.375rem);
+  --text-display-s--line-height: 1.1;
+  --text-title-l: 2rem;
+  --text-title-l--line-height: 1.15;
+  --text-title-m: 1.5rem;
+  --text-title-m--line-height: 1.25;
+  --text-eyebrow: 0.6875rem;
+  --text-eyebrow--line-height: 1rem;
 }
 
-body {
-  background: var(--color-cream);
-  color: var(--color-ink);
-  font-family: var(--font-sans);
+/* ---------- Base ---------- */
+@layer base {
+  html {
+    background: var(--bg);
+  }
+  html:has(body [data-theme="daylight"]) {
+    background: #f6f2ea;
+  }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.625;
+    font-feature-settings: "ss01", "cv11";
+    text-rendering: optimizeLegibility;
+  }
+  [data-theme] {
+    background: var(--bg);
+    color: var(--fg);
+  }
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  ::selection {
+    background: var(--accent);
+    color: var(--on-accent);
+  }
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 3px;
+  }
+  code {
+    font-size: 0.875em;
+    color: var(--accent-ink);
+  }
 }
 
+/* ---------- Components ---------- */
 @layer components {
   .container-page {
-    @apply mx-auto w-full max-w-6xl px-4 sm:px-6;
+    @apply mx-auto w-full max-w-[80rem] px-5 sm:px-8;
+  }
+
+  .skip-link {
+    @apply sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:rounded-full focus:px-4 focus:py-2;
+    background: var(--accent);
+    color: var(--on-accent);
+  }
+
+  /* Typography helpers */
+  .eyebrow {
+    @apply text-eyebrow font-medium tracking-eyebrow uppercase;
+    color: var(--accent-ink);
+  }
+  .display-xl,
+  .display-l,
+  .display-m,
+  .display-s {
+    font-family: var(--font-display);
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+  .display-xl { @apply text-display-xl; }
+  .display-l { @apply text-display-l; }
+  .display-m { @apply text-display-m; }
+  .display-s { @apply text-display-s; }
+  .lede {
+    @apply text-lg leading-8;
+    color: var(--fg-2);
+  }
+  .muted { color: var(--fg-2); }
+  .meta { @apply text-sm; color: var(--fg-3); }
+  .numeric { font-variant-numeric: tabular-nums lining-nums; }
+  .price {
+    @apply font-medium;
+    font-variant-numeric: tabular-nums lining-nums;
+    letter-spacing: -0.01em;
+  }
+  .link {
+    @apply underline decoration-1 underline-offset-4 transition-colors;
+    text-decoration-color: var(--line-strong);
+  }
+  .link:hover {
+    color: var(--accent-ink);
+    text-decoration-color: currentColor;
+  }
+  .rule {
+    border-top: 1px solid var(--line);
+  }
+
+  /* Buttons — pill shaped; one primary per view. */
+  .btn-primary,
+  .btn-secondary,
+  .btn-ghost,
+  .btn-danger {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-medium whitespace-nowrap select-none;
+    letter-spacing: 0.01em;
+    transition:
+      background-color var(--dur-base) var(--ease-out-expo),
+      color var(--dur-base) var(--ease-out-expo),
+      border-color var(--dur-base) var(--ease-out-expo),
+      box-shadow var(--dur-base) var(--ease-out-expo),
+      transform var(--dur-fast) var(--ease-out-expo);
+  }
+  .btn-primary:active,
+  .btn-secondary:active,
+  .btn-ghost:active,
+  .btn-danger:active {
+    transform: scale(0.98);
+  }
+  .btn-primary:disabled,
+  .btn-secondary:disabled,
+  .btn-ghost:disabled,
+  .btn-danger:disabled {
+    @apply cursor-not-allowed opacity-45;
+    transform: none;
   }
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-50 bg-brand-600 text-white hover:bg-brand-700;
+    background: var(--accent);
+    color: var(--on-accent);
+  }
+  .btn-primary:not(:disabled):hover {
+    background: var(--accent-hover);
+    box-shadow: var(--elev-glow);
   }
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-50 border border-brand-200 bg-white text-brand-800 hover:bg-brand-50;
+    border: 1px solid var(--line-strong);
+    color: var(--fg);
+  }
+  .btn-secondary:not(:disabled):hover {
+    border-color: var(--accent-ink);
+    color: var(--accent-ink);
+  }
+  .btn-ghost {
+    @apply px-3;
+    color: var(--fg-2);
+  }
+  .btn-ghost:not(:disabled):hover {
+    color: var(--fg);
+    background: var(--accent-wash);
   }
   .btn-danger {
-    @apply inline-flex items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-50 border border-red-200 bg-white text-red-700 hover:bg-red-50;
+    background: var(--danger);
+    color: var(--on-danger);
+  }
+  .btn-danger:not(:disabled):hover {
+    filter: brightness(1.12);
   }
   .btn-sm {
-    @apply px-3 py-1.5 text-xs;
+    @apply px-4 py-2 text-xs;
+  }
+  .btn-lg {
+    @apply px-8 py-4 text-[0.9375rem];
+  }
+
+  /* Forms */
+  .label {
+    @apply mb-2 block text-eyebrow font-medium tracking-label uppercase;
+    color: var(--fg-2);
   }
   .input {
-    @apply w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm shadow-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-200;
+    @apply w-full rounded-xs px-3.5 py-2.5 text-[0.9375rem] outline-none;
+    background: var(--input-bg);
+    color: var(--fg);
+    border: 1px solid var(--line-strong);
+    transition:
+      border-color var(--dur-fast) ease,
+      box-shadow var(--dur-fast) ease;
   }
-  .label {
-    @apply mb-1 block text-sm font-medium text-neutral-800;
+  .input::placeholder {
+    color: var(--fg-3);
   }
+  .input:hover {
+    border-color: color-mix(in srgb, var(--fg) 40%, transparent);
+  }
+  .input:focus {
+    border-color: var(--accent-ink);
+    box-shadow: 0 0 0 3px var(--accent-wash);
+  }
+  .input:disabled {
+    @apply cursor-not-allowed;
+    color: var(--fg-3);
+    background: transparent;
+  }
+  .hint {
+    @apply mt-1.5 text-xs;
+    color: var(--fg-3);
+  }
+
+  /* Surfaces */
   .card {
-    @apply rounded-lg border border-neutral-200 bg-white p-5 shadow-sm;
+    @apply rounded-md p-6;
+    background: var(--surface);
+    box-shadow: var(--elev-card);
   }
+  .glass {
+    background: var(--glass);
+    -webkit-backdrop-filter: blur(18px) saturate(1.15);
+    backdrop-filter: blur(18px) saturate(1.15);
+  }
+
+  /* Badges — tinted pill + ink text; colour is never the only signal (always a label). */
   .badge {
-    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+    @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[0.6875rem] leading-none font-medium tracking-[0.08em] whitespace-nowrap uppercase;
+    background: var(--surface-3);
+    color: var(--fg-2);
+  }
+  .badge-accent { background: var(--accent-wash); color: var(--accent-ink); }
+  .badge-success { background: var(--success-wash); color: var(--success-ink); }
+  .badge-warning { background: var(--warning-wash); color: var(--warning-ink); }
+  .badge-danger { background: var(--danger-wash); color: var(--danger-ink); }
+  .badge-info { background: var(--info-wash); color: var(--info-ink); }
+  .badge-neutral { background: var(--surface-3); color: var(--fg-2); }
+  .badge-dot::before {
+    content: "";
+    @apply size-1.5 rounded-full;
+    background: currentColor;
+  }
+
+  /* Tables — ruled ledger */
+  .table-wrap {
+    @apply overflow-x-auto;
   }
   .table {
     @apply w-full border-collapse text-sm;
+    font-variant-numeric: tabular-nums lining-nums;
   }
   .table th {
-    @apply border-b border-neutral-200 bg-neutral-50 px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide text-neutral-600;
+    @apply px-4 py-3 text-left text-[0.6875rem] font-medium tracking-label whitespace-nowrap uppercase;
+    color: var(--fg-3);
+    border-bottom: 1px solid var(--line-strong);
   }
   .table td {
-    @apply border-b border-neutral-100 px-3 py-2 align-middle;
+    @apply px-4 py-3.5 align-middle;
+    border-bottom: 1px solid var(--line);
   }
-  .alert-error {
-    @apply rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800;
+  .table tbody tr {
+    transition: background-color var(--dur-fast) ease;
+  }
+  .table tbody tr:hover {
+    background: color-mix(in srgb, var(--surface-3) 45%, transparent);
+  }
+  .table tfoot td {
+    border-bottom: 0;
+  }
+
+  /* Alerts */
+  .alert-info,
+  .alert-error,
+  .alert-warning,
+  .alert-success {
+    @apply rounded-sm px-4 py-3 text-sm leading-6;
+    border: 1px solid;
   }
   .alert-info {
-    @apply rounded-md border border-brand-200 bg-brand-50 px-3 py-2 text-sm text-brand-800;
+    background: var(--accent-wash);
+    border-color: color-mix(in srgb, var(--accent-ink) 30%, transparent);
+    color: var(--fg);
+  }
+  .alert-error {
+    background: var(--danger-wash);
+    border-color: color-mix(in srgb, var(--danger-ink) 35%, transparent);
+    color: var(--danger-ink);
+  }
+  .alert-warning {
+    background: var(--warning-wash);
+    border-color: color-mix(in srgb, var(--warning-ink) 35%, transparent);
+    color: var(--warning-ink);
+  }
+  .alert-success {
+    background: var(--success-wash);
+    border-color: color-mix(in srgb, var(--success-ink) 35%, transparent);
+    color: var(--success-ink);
+  }
+
+  /* Spec ledger (dl) — label / value rows with hairlines */
+  .ledger {
+    @apply grid grid-cols-[minmax(0,10rem)_1fr] text-sm;
+  }
+  .ledger > dt,
+  .ledger > dd {
+    @apply py-3;
+    border-bottom: 1px solid var(--line);
+  }
+  .ledger > dt {
+    @apply text-[0.6875rem] font-medium tracking-label uppercase;
+    color: var(--fg-3);
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+  }
+
+  /* Film grain — static noise over the storefront (never animated). */
+  .grain {
+    @apply pointer-events-none fixed inset-0 z-[70];
+    opacity: 0.07;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1.1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 }
