@@ -17,7 +17,7 @@ export default async function AccountOrdersPage(props: PageProps<"/account/order
   const { rows, total, pages } = await listOrders({ customerId: session.customer.id, page });
 
   return (
-    <div className="space-y-6">
+    <div className="container-page space-y-6 py-8">
       <h1 className="text-3xl font-bold">Order history</h1>
       <div className="card p-0">
         <table className="table">

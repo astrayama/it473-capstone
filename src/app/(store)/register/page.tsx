@@ -11,7 +11,7 @@ export default async function RegisterPage() {
   if (session?.customer) redirect("/account");
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
+    <div className="container-page max-w-2xl space-y-6 py-8">
       <div>
         <h1 className="text-3xl font-bold">Apply for a wholesale account</h1>
         <p className="text-sm text-neutral-600">

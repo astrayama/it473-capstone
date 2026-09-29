@@ -9,7 +9,7 @@ export default async function HomePage() {
     return [];
   });
   return (
-    <div className="space-y-14">
+    <div className="container-page space-y-14 py-8">
       <section className="grid items-center gap-8 md:grid-cols-2">
         <div className="space-y-5">
           <p className="badge bg-brand-100 text-brand-800">Wholesale · Midwest delivery</p>

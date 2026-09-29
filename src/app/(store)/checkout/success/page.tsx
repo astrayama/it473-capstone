@@ -12,7 +12,7 @@ export default async function CheckoutSuccessPage(props: PageProps<"/checkout/su
   if (!order || (order.customerId !== session.customer?.id && !session.isAdmin)) notFound();
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6">
+    <div className="container-page max-w-3xl space-y-6 py-8">
       <div className="card space-y-2">
         <h1 className="text-2xl font-bold text-brand-800">Thank you! Your order is in.</h1>
         {sp.payment === "skipped" ? (

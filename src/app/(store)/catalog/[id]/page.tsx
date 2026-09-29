@@ -34,7 +34,7 @@ export default async function ProductPage(props: PageProps<"/catalog/[id]">) {
   const category = categoryLabel(categories, product.category);
 
   return (
-    <div className="space-y-6">
+    <div className="container-page space-y-6 py-8">
       <nav className="text-sm text-neutral-500">
         <Link href="/catalog" className="hover:underline">Catalog</Link> ›{" "}
         <Link href={`/catalog?category=${encodeURIComponent(product.category)}`} className="hover:underline">{category}</Link>

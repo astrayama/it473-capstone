@@ -11,7 +11,7 @@ export default async function AccountOrderPage(props: PageProps<"/account/orders
   if (!order || order.customerId !== session.customer?.id) notFound();
 
   return (
-    <div className="mx-auto max-w-3xl space-y-4">
+    <div className="container-page max-w-3xl space-y-4 py-8">
       <Link href="/account/orders" className="text-sm text-neutral-500 hover:underline">‹ Order history</Link>
       <OrderSummary order={order} />
     </div>

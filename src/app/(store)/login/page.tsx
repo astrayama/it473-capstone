@@ -12,7 +12,7 @@ export default async function LoginPage(props: PageProps<"/login">) {
   if (await getSession()) redirect(next);
 
   return (
-    <div className="mx-auto max-w-md space-y-6">
+    <div className="container-page max-w-md space-y-6 py-8">
       <div>
         <h1 className="text-3xl font-bold">Sign in</h1>
         <p className="text-sm text-neutral-600">Wholesale customers and staff.</p>

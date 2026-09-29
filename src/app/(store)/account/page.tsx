@@ -14,7 +14,7 @@ export default async function AccountPage(props: PageProps<"/account">) {
 
   if (!customer) {
     return (
-      <div className="card mx-auto max-w-lg space-y-3">
+      <div className="container-page py-8"><div className="card mx-auto max-w-lg space-y-3">
         <h1 className="text-xl font-semibold">No wholesale account linked</h1>
         <p className="text-sm text-neutral-600">
           You are signed in as {session.email}, but this login is not linked to a customer account.
@@ -24,14 +24,14 @@ export default async function AccountPage(props: PageProps<"/account">) {
         ) : (
           <Link href="/register" className="btn-primary">Complete your application</Link>
         )}
-      </div>
+      </div></div>
     );
   }
 
   const { rows: recent } = await listOrders({ customerId: customer.id, page: 1 });
 
   return (
-    <div className="space-y-6">
+    <div className="container-page space-y-6 py-8">
       {sp.welcome === "1" && (
         <p className="alert-info">Thanks for applying! We will review your account within one business day.</p>
       )}
