@@ -1,14 +1,17 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ViewTransition } from "react";
 import { getProduct } from "@/lib/catalog";
 import { categoryLabel, listCategories } from "@/lib/categories";
 import { stockLevel, tryGetInventoryMap } from "@/lib/inventory";
 import { canOrder, canSeePrices, getSession } from "@/lib/auth";
-import { formatCents, perUnit } from "@/lib/format";
+import { transitionName } from "@/lib/motion";
 import { ProductImage } from "@/components/product-image";
 import { StockBadge } from "@/components/stock-badge";
+import { Price } from "@/components/price";
 import { AddToCartButton } from "@/components/cart/add-to-cart-button";
+import { ArrowLeft } from "@/components/icons";
 
 export async function generateMetadata(props: PageProps<"/catalog/[id]">): Promise<Metadata> {
   const { id } = await props.params;
@@ -34,50 +37,71 @@ export default async function ProductPage(props: PageProps<"/catalog/[id]">) {
   const category = categoryLabel(categories, product.category);
 
   return (
-    <div className="container-page space-y-6 py-8">
-      <nav className="text-sm text-neutral-500">
-        <Link href="/catalog" className="hover:underline">Catalog</Link> ›{" "}
-        <Link href={`/catalog?category=${encodeURIComponent(product.category)}`} className="hover:underline">{category}</Link>
+    <div className="container-page py-10 md:py-16">
+      <nav aria-label="Breadcrumb" className="meta flex flex-wrap items-center gap-2">
+        <Link href="/catalog" className="inline-flex items-center gap-2 transition-colors hover:text-fg">
+          <ArrowLeft width={14} height={14} /> Catalog
+        </Link>
+        <span aria-hidden>/</span>
+        <Link href={`/catalog?category=${encodeURIComponent(product.category)}`} className="transition-colors hover:text-fg">{category}</Link>
       </nav>
-      <div className="grid gap-8 md:grid-cols-2">
-        <ProductImage src={product.imageUrl} alt={product.name} aspect="4/5" eager sizes="(min-width: 768px) 50vw, 100vw" />
-        <div className="space-y-4">
-          <div className="text-sm uppercase tracking-wide text-neutral-500">{category}</div>
-          <h1 className="text-3xl font-bold">{product.name}</h1>
-          <p className="text-neutral-700">{product.description}</p>
-          <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
-            <dt className="text-neutral-500">SKU</dt><dd className="font-mono">{product.sku}</dd>
-            <dt className="text-neutral-500">Sold by the</dt><dd className="capitalize">{product.unitOfMeasure}</dd>
-            <dt className="text-neutral-500">Category</dt><dd>{category}</dd>
+
+      <div className="mt-8 grid gap-12 md:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] lg:gap-20">
+        <ViewTransition name={transitionName("product", product.id)} share="morph" default="none">
+          <ProductImage
+            src={product.imageUrl}
+            alt={product.name}
+            aspect="4/5"
+            eager
+            sizes="(min-width: 768px) 50vw, 100vw"
+            className="rounded-lg md:sticky md:top-[calc(var(--header-h)+2rem)]"
+          />
+        </ViewTransition>
+
+        <div className="rise-group md:py-6">
+          <p className="eyebrow">{category}</p>
+          <h1 className="display-m mt-5">{product.name}</h1>
+          {product.description && <p className="lede mt-6">{product.description}</p>}
+
+          <div className="mt-10">
+            {showPrice ? (
+              <Price cents={product.priceCents} unit={product.unitOfMeasure} size="lg" />
+            ) : (
+              <p className="alert-info">
+                <Link href={`/login?next=${encodeURIComponent(href)}`} className="link font-medium">Sign in</Link> to see trade
+                pricing, or <Link href="/register" className="link font-medium">apply for an account</Link>.
+              </p>
+            )}
+          </div>
+
+          {ordering && (
+            <div className="mt-8">
+              <AddToCartButton
+                showQuantity
+                item={{
+                  productId: product.id, sku: product.sku, name: product.name, unitOfMeasure: product.unitOfMeasure,
+                  category: product.category, priceCents: product.priceCents, imageUrl: product.imageUrl,
+                }}
+                maxQuantity={inventory ? (stock?.quantityOnHand ?? 0) : null}
+              />
+            </div>
+          )}
+
+          <dl className="ledger mt-12">
+            <dt>SKU</dt>
+            <dd className="numeric tracking-[0.06em]">{product.sku}</dd>
+            <dt>Sold by the</dt>
+            <dd className="capitalize">{product.unitOfMeasure}</dd>
+            <dt>Category</dt>
+            <dd>{category}</dd>
             {inventory && (
               <>
-                <dt className="text-neutral-500">Availability</dt><dd><StockBadge level={stockLevel(stock)} /></dd>
+                <dt>Availability</dt>
+                <dd><StockBadge level={stockLevel(stock)} /></dd>
               </>
             )}
           </dl>
-          {showPrice ? (
-            product.priceCents > 0 ? (
-              <div className="text-3xl font-semibold">
-                {formatCents(product.priceCents)} <span className="text-base font-normal text-neutral-500">{perUnit(product.unitOfMeasure)}</span>
-              </div>
-            ) : (
-              <p className="text-neutral-600">Price on request.</p>
-            )
-          ) : (
-            <p className="alert-info">
-              <Link href={`/login?next=${encodeURIComponent(href)}`} className="font-medium underline">Sign in</Link> to see wholesale pricing.
-            </p>
-          )}
-          {ordering && (
-            <AddToCartButton
-              showQuantity
-              item={{
-                productId: product.id, sku: product.sku, name: product.name, unitOfMeasure: product.unitOfMeasure,
-                category: product.category, priceCents: product.priceCents, imageUrl: product.imageUrl,
-              }}
-              maxQuantity={inventory ? (stock?.quantityOnHand ?? 0) : null}
-            />
-          )}
+          <p className="meta mt-6">Delivery and applicable taxes are confirmed on your invoice.</p>
         </div>
       </div>
     </div>

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import { RegisterForm } from "@/components/auth/register-form";
+import { AuthSplit } from "@/components/auth/auth-split";
 
 export const metadata: Metadata = { title: "Apply for an account" };
 
@@ -11,17 +12,18 @@ export default async function RegisterPage() {
   if (session?.customer) redirect("/account");
 
   return (
-    <div className="container-page max-w-2xl space-y-6 py-8">
-      <div>
-        <h1 className="text-3xl font-bold">Apply for a wholesale account</h1>
-        <p className="text-sm text-neutral-600">
-          For restaurants, grocers, schools, and institutions. Already have an account?{" "}
-          <Link href="/login" className="font-medium text-brand-700 underline">Sign in</Link>.
-        </p>
-      </div>
-      <div className="card">
-        <RegisterForm />
-      </div>
-    </div>
+    <AuthSplit
+      wide
+      eyebrow="Apply"
+      title={<>Open a <em className="text-accent-ink">trade account.</em></>}
+      intro={
+        <>
+          For restaurants, grocers, schools and institutions. Already have an account?{" "}
+          <Link href="/login" className="link text-fg">Sign in</Link>.
+        </>
+      }
+    >
+      <RegisterForm />
+    </AuthSplit>
   );
 }

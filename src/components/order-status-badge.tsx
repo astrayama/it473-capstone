@@ -1,14 +1,26 @@
-import { orderStatusLabels } from "@/lib/format";
+import { customerStatusLabels, orderStatusLabels } from "@/lib/format";
 
-const colors: Record<string, string> = {
-  PENDING_PAYMENT: "bg-amber-100 text-amber-800",
-  PAID: "bg-brand-100 text-brand-800",
-  CONFIRMED: "bg-blue-100 text-blue-800",
-  OUT_FOR_DELIVERY: "bg-indigo-100 text-indigo-800",
-  DELIVERED: "bg-neutral-200 text-neutral-700",
-  CANCELLED: "bg-red-100 text-red-800",
+const orderTone: Record<string, string> = {
+  PENDING_PAYMENT: "badge-warning",
+  PAID: "badge-accent",
+  CONFIRMED: "badge-info",
+  OUT_FOR_DELIVERY: "badge-info",
+  DELIVERED: "badge-success",
+  CANCELLED: "badge-danger",
 };
 
 export function OrderStatusBadge({ status }: { status: string }) {
-  return <span className={`badge ${colors[status] ?? "bg-neutral-200"}`}>{orderStatusLabels[status] ?? status}</span>;
+  return <span className={`badge badge-dot ${orderTone[status] ?? "badge-neutral"}`}>{orderStatusLabels[status] ?? status}</span>;
+}
+
+const customerTone: Record<string, string> = {
+  PENDING: "badge-warning",
+  APPROVED: "badge-success",
+  SUSPENDED: "badge-danger",
+};
+
+export function CustomerStatusBadge({ status }: { status: string }) {
+  return (
+    <span className={`badge badge-dot ${customerTone[status] ?? "badge-neutral"}`}>{customerStatusLabels[status] ?? status}</span>
+  );
 }

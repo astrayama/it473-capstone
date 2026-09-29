@@ -2,8 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { requireSession } from "@/lib/auth";
 import { listOrders } from "@/lib/orders";
-import { customerStatusLabels, formatCents, formatDateTime, orderNumber } from "@/lib/format";
-import { OrderStatusBadge } from "@/components/order-status-badge";
+import { formatCents, formatDateTime, orderNumber } from "@/lib/format";
+import { CustomerStatusBadge, OrderStatusBadge } from "@/components/order-status-badge";
+import { SectionHeading } from "@/components/section-heading";
+import { EmptyState } from "@/components/empty-state";
 
 export const metadata: Metadata = { title: "Account" };
 
@@ -14,66 +16,70 @@ export default async function AccountPage(props: PageProps<"/account">) {
 
   if (!customer) {
     return (
-      <div className="container-page py-8"><div className="card mx-auto max-w-lg space-y-3">
-        <h1 className="text-xl font-semibold">No wholesale account linked</h1>
-        <p className="text-sm text-neutral-600">
-          You are signed in as {session.email}, but this login is not linked to a customer account.
-        </p>
-        {session.isAdmin ? (
-          <Link href="/admin" className="btn-primary">Go to the admin area</Link>
-        ) : (
-          <Link href="/register" className="btn-primary">Complete your application</Link>
-        )}
-      </div></div>
+      <div className="container-page max-w-2xl py-16 md:py-24">
+        <EmptyState
+          title="No wholesale account linked"
+          action={
+            session.isAdmin ? (
+              <Link href="/admin" className="btn-primary">Go to the staff admin</Link>
+            ) : (
+              <Link href="/register" className="btn-primary">Complete your application</Link>
+            )
+          }
+        >
+          You are signed in as {session.email}, but this login isn&apos;t linked to a customer account.
+        </EmptyState>
+      </div>
     );
   }
 
   const { rows: recent } = await listOrders({ customerId: customer.id, page: 1 });
 
   return (
-    <div className="container-page space-y-6 py-8">
+    <div className="container-page py-16 md:py-20">
       {sp.welcome === "1" && (
-        <p className="alert-info">Thanks for applying! We will review your account within one business day.</p>
+        <p className="alert-success mb-10">Thank you for applying. We review new accounts within one business day.</p>
       )}
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold">{customer.businessName}</h1>
-          <p className="text-sm text-neutral-600">{customer.contactName} · {customer.email}</p>
-        </div>
-        <span className={`badge ${customer.status === "APPROVED" ? "bg-brand-100 text-brand-800" : "bg-amber-100 text-amber-800"}`}>
-          {customerStatusLabels[customer.status]}
-        </span>
-      </div>
+      <SectionHeading
+        as="h1"
+        size="l"
+        eyebrow="Your account"
+        title={customer.businessName}
+        lede={`${customer.contactName} · ${customer.email}`}
+        action={<CustomerStatusBadge status={customer.status} />}
+      />
 
-      <div className="grid gap-6 md:grid-cols-[300px_1fr]">
-        <div className="card text-sm">
-          <h2 className="mb-2 font-semibold">Delivery address</h2>
+      <div className="mt-14 grid items-start gap-10 md:grid-cols-[18rem_minmax(0,1fr)]">
+        <div className="card text-sm leading-7">
+          <p className="eyebrow mb-4">Delivery address</p>
           <div>{customer.addressLine1}</div>
           {customer.addressLine2 && <div>{customer.addressLine2}</div>}
           <div>{customer.city}, {customer.state} {customer.postalCode}</div>
-          {customer.phone && <div className="mt-2 text-neutral-600">{customer.phone}</div>}
+          {customer.phone && <div className="mt-3 text-fg-2">{customer.phone}</div>}
         </div>
-        <div className="card p-0">
-          <div className="flex items-center justify-between p-4">
-            <h2 className="font-semibold">Recent orders</h2>
-            <Link href="/account/orders" className="text-sm text-brand-700 underline">All orders</Link>
+        <div>
+          <div className="flex items-center justify-between">
+            <h2 className="text-title-m">Recent orders</h2>
+            <Link href="/account/orders" className="link text-sm text-fg-2">All orders</Link>
           </div>
           {recent.length === 0 ? (
-            <p className="px-4 pb-4 text-sm text-neutral-600">No orders yet.</p>
+            <p className="meta mt-6">No orders yet.</p>
           ) : (
-            <table className="table">
-              <thead><tr><th>Order</th><th>Placed</th><th>Status</th><th className="text-right">Total</th></tr></thead>
-              <tbody>
-                {recent.slice(0, 5).map((o) => (
-                  <tr key={o.id}>
-                    <td><Link href={`/account/orders/${o.id}`} className="font-medium hover:underline">{orderNumber(o.orderNumber)}</Link></td>
-                    <td>{formatDateTime(o.createdAt)}</td>
-                    <td><OrderStatusBadge status={o.status} /></td>
-                    <td className="text-right">{formatCents(o.totalCents)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <div className="table-wrap mt-4">
+              <table className="table">
+                <thead><tr><th>Order</th><th>Placed</th><th>Status</th><th className="text-right">Total</th></tr></thead>
+                <tbody>
+                  {recent.slice(0, 5).map((o) => (
+                    <tr key={o.id}>
+                      <td><Link href={`/account/orders/${o.id}`} className="link numeric font-medium">{orderNumber(o.orderNumber)}</Link></td>
+                      <td>{formatDateTime(o.createdAt)}</td>
+                      <td><OrderStatusBadge status={o.status} /></td>
+                      <td className="text-right">{formatCents(o.totalCents)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
       </div>
