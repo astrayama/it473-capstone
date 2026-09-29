@@ -48,3 +48,6 @@ next-env.d.ts
 
 # editor / agent local config
 .claude/
+
+# brand script working files (extracted from the next/font download)
+/scripts/brand/fonts/

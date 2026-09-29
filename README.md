@@ -119,7 +119,11 @@ Firebase console) show up on the site straight away.
 
 ## Design system
 
-**Harvest Noir**: candlelit gold on near-black for buyers, linen and ink for staff.
+**Harvest Noir**: candlelit gold on near-black for buyers, linen and ink for staff. The full
+system (tokens for both themes, type scale, motion, component guidelines and previews, logos
+and photography) is published as a design system artifact:
+[Prairie Crest Harvest Noir](https://claude.ai/artifact/TtCi3oRN8VKbo6y9zbEoJf) (private until
+shared from its Share menu).
 
 * Tokens live in `src/app/globals.css`: raw values per theme on `[data-theme="noir"]` and
   `[data-theme="daylight"]`, exposed to Tailwind through `@theme inline`, so a utility like
@@ -129,5 +133,5 @@ Firebase console) show up on the site straight away.
   tabular numerals), loaded with `next/font`.
 * Motion is measured and CSS-first (page transitions via React `<ViewTransition>`, scroll-driven
   reveals and parallax, hover depth). It all switches off under `prefers-reduced-motion`.
-* Brand marks in `public/brand/` and `src/components/brand/` are outlined from the brand fonts;
-  photography is credited in `public/brand/photos/CREDITS.md`.
+* Brand marks in `public/brand/` and `src/components/brand/` are outlined from the brand fonts
+  (regenerate with `scripts/brand/`); photography is credited in `public/brand/photos/CREDITS.md`.
