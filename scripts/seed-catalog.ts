@@ -15,7 +15,7 @@
  *                    bumps the document's updatedAt so cached /media URLs refresh.
  *
  * Needs Application Default Credentials with roles/datastore.user (Firestore) and, for
- * photos, storage object create/overwrite on the media bucket (roles/storage.objectAdmin).
+ * photos, storage object create/overwrite on the media bucket (roles/storage.objectUser).
  * Back up first: seed/backup/ holds the catalog as it was before the first seed.
  * Standalone on purpose (src/lib is server-only).
  */
@@ -150,7 +150,7 @@ async function main() {
           `\nPhotos not uploaded: this login can't write to gs://${bucketName} (${code}).\n` +
             `Ask a project owner to run:\n\n` +
             `  gcloud storage buckets add-iam-policy-binding gs://${bucketName} \\\n` +
-            `    --member=user:<your-email> --role=roles/storage.objectAdmin --project=${projectId}\n\n` +
+            `    --member=user:<your-email> --role=roles/storage.objectUser --project=${projectId}\n\n` +
             `then re-run: npm run seed:catalog -- --images-only\n` +
             `Until then the site shows each product's existing photo, or the brand placeholder.`,
         );

@@ -109,7 +109,9 @@ Product photos are uploaded through `/api/admin/products/[id]/image` to
 `products/{id}/images/primary.{ext}` in the media bucket, and that path becomes the first
 entry of the document's `imagePaths`. "Delete" archives (`isActive: false`).
 
-**Photos.** The media bucket has public access prevention on. `/media/[...path]` streams
+**Photos.** The media bucket has public access prevention on. Reads take the edge path:
+browser → `foodhub-lb` (Cloud CDN on) → Cloud Run `/media` → bucket, so the CDN caches each
+versioned photo and the bucket never needs a public or signed URL. `/media/[...path]` streams
 objects through the app with ETag/304 support; URLs carry `?v=<updatedAt>` so they can be
 cached for a year. If the object is missing or the server can't read the bucket, it
 redirects to `/brand/product-fallback.svg` without caching.
@@ -123,7 +125,7 @@ redirects to `/brand/product-fallback.svg` without caching.
 | Artifact Registry | image storage (`foodhub/web`, `foodhub/migrator`) | — |
 | Cloud SQL | PostgreSQL 16, connected over the Cloud SQL unix socket | cloudsql.client |
 | Firestore | product catalog | datastore.user |
-| Cloud Storage | product photos, private bucket served through `/media` | storage.objectViewer + objectCreator on the media bucket |
+| Cloud Storage | product photos, private bucket served through `/media` | storage.objectUser on the media bucket (read, upload, overwrite) |
 | Firebase Auth / Identity Platform | customer + staff logins, session cookies | firebaseauth.admin |
 | Secret Manager | DATABASE_URL, Stripe + Firebase keys, SITE_URL | secretmanager.secretAccessor |
 

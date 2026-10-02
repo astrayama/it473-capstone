@@ -66,7 +66,7 @@ CONNECTION_NAME="${PROJECT_ID}:${REGION}:${SQL_INSTANCE}"
 log "Runtime service account: $RUNTIME_SA"
 gcloud iam service-accounts describe "$RUNTIME_SA" >/dev/null 2>&1 || \
   gcloud iam service-accounts create "$RUNTIME_SA_NAME" --display-name="Food hub Cloud Run runtime"
-for role in roles/cloudsql.client roles/datastore.user roles/storage.objectAdmin \
+for role in roles/cloudsql.client roles/datastore.user roles/storage.objectUser \
             roles/firebaseauth.admin roles/secretmanager.secretAccessor roles/logging.logWriter; do
   gcloud projects add-iam-policy-binding "$PROJECT_ID" --member="serviceAccount:$RUNTIME_SA" --role="$role" >/dev/null
 done

@@ -19,16 +19,18 @@ trigger redeploys from `main`. **Merging to `main` deploys.**
 The app runs as `foodhub-run@it473-capstone-project.iam.gserviceaccount.com`, which already
 has `roles/datastore.user` (Firestore) and `roles/cloudsql.client`. Still to do:
 
-1. **Photos.** Let the app read (and, for admin uploads, write) the media bucket:
+1. **Photos.** Let the app read the media bucket and save admin photo uploads. Replacing a
+   photo overwrites `primary.jpg`, and an overwrite needs delete permission, so the role is
+   `objectUser` (read, create, overwrite) rather than `objectCreator`:
    ```bash
    gcloud storage buckets add-iam-policy-binding gs://it473-capstone-project-media \
      --member=serviceAccount:foodhub-run@it473-capstone-project.iam.gserviceaccount.com \
-     --role=roles/storage.objectViewer --project=it473-capstone-project
-   gcloud storage buckets add-iam-policy-binding gs://it473-capstone-project-media \
-     --member=serviceAccount:foodhub-run@it473-capstone-project.iam.gserviceaccount.com \
-     --role=roles/storage.objectCreator --project=it473-capstone-project
+     --role=roles/storage.objectUser --project=it473-capstone-project
    ```
-   Until then, product photos fall back to the brand placeholder; nothing breaks.
+   Until then, product photos fall back to the brand placeholder; nothing breaks. The bucket
+   stays private (Public Access Prevention enforced) and no signed URLs are used: browsers get
+   photos from `/media` through `foodhub-lb` and Cloud CDN, and admin uploads go through the
+   app's own route as `foodhub-run`.
 2. **Sign-in.** No Firebase web app is registered yet, so the login and apply pages show
    "not available". In the Firebase console: *Authentication → Get started → Email/Password*,
    then *Project settings → Your apps → Add app → Web*, and store the keys:
@@ -208,7 +210,7 @@ and put the printed `whsec_` in `.env`.
 | Pages show "Something went wrong" | Cloud Run logs: `gcloud run services logs read foodhub-web --region us-central1`. Usually a missing secret or IAM role. |
 | Sign-in form says "not configured" | `FIREBASE_API_KEY` / `FIREBASE_APP_ID` secrets still `REPLACE_ME`. |
 | `auth/unauthorized-domain` on sign-in | Add the Cloud Run host to Firebase Authorized domains. |
-| Photo upload fails | Bucket exists and runtime SA has `storage.objectAdmin`; locally, ADC user needs the same. |
+| Photo upload fails | Runtime SA has `roles/storage.objectUser` on the media bucket; locally, your ADC user needs the same. |
 | Order stays PENDING_PAYMENT after paying | Webhook endpoint/secret not set; check Stripe dashboard → Webhooks → recent deliveries. |
 
 ## Cost control

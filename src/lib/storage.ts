@@ -44,7 +44,7 @@ export async function uploadProductImage(file: File, productId: string): Promise
   } catch (err) {
     if (httpCode(err) === 403) {
       throw new UserFacingError(
-        `This server can't write to gs://${MEDIA_BUCKET}. A project owner needs to grant its service account roles/storage.objectCreator on that bucket.`,
+        `This server can't write to gs://${MEDIA_BUCKET}. A project owner needs to grant its service account roles/storage.objectUser on that bucket.`,
         503,
       );
     }
