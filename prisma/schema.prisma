@@ -48,7 +48,7 @@ model Customer {
 }
 
 model InventoryItem {
-  productId      String   @id // Firestore products/{id}
+  productId      String   @id // Firestore catalog/{id}, e.g. "sku-1001"
   sku            String   @unique
   quantityOnHand Int      @default(0) // cases in the warehouse
   reorderPoint   Int      @default(0) // flag as "low stock" at or below this
