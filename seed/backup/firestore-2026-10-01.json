@@ -1,0 +1,141 @@
+{
+  "project": "it473-capstone-project",
+  "takenAt": "2026-10-02T03:20:49.790Z",
+  "catalog": {
+    "sku-1001": {
+      "name": "Organic Roma Tomatoes",
+      "description": "Case of organic Roma tomatoes, 25 lb",
+      "category": "produce",
+      "unitOfMeasure": "case",
+      "basePrice": 34.99,
+      "imagePaths": [
+        "products/sku-1001/images/primary.jpg"
+      ],
+      "isActive": true,
+      "createdAt": {
+        "__timestamp": "2026-09-21T23:32:43.285Z"
+      },
+      "updatedAt": {
+        "__timestamp": "2026-09-21T23:32:43.285Z"
+      }
+    },
+    "sku-1002": {
+      "name": "Romaine Lettuce",
+      "description": "Case of romaine lettuce hearts, 24 ct",
+      "category": "produce",
+      "unitOfMeasure": "case",
+      "basePrice": 28.5,
+      "imagePaths": [
+        "products/sku-1002/images/primary.jpg"
+      ],
+      "isActive": true,
+      "createdAt": {
+        "__timestamp": "2026-09-21T23:32:43.450Z"
+      },
+      "updatedAt": {
+        "__timestamp": "2026-09-21T23:32:43.450Z"
+      }
+    },
+    "sku-2001": {
+      "name": "Whole Milk",
+      "description": "Gallon whole milk, 4-pack",
+      "category": "dairy",
+      "unitOfMeasure": "pack",
+      "basePrice": 18.75,
+      "imagePaths": [
+        "products/sku-2001/images/primary.jpg"
+      ],
+      "isActive": true,
+      "createdAt": {
+        "__timestamp": "2026-09-21T23:32:43.557Z"
+      },
+      "updatedAt": {
+        "__timestamp": "2026-09-21T23:32:43.557Z"
+      }
+    },
+    "sku-2002": {
+      "name": "Shredded Mozzarella",
+      "description": "5 lb bag shredded mozzarella cheese",
+      "category": "dairy",
+      "unitOfMeasure": "bag",
+      "basePrice": 22.4,
+      "imagePaths": [
+        "products/sku-2002/images/primary.jpg"
+      ],
+      "isActive": true,
+      "createdAt": {
+        "__timestamp": "2026-09-21T23:32:43.719Z"
+      },
+      "updatedAt": {
+        "__timestamp": "2026-09-21T23:32:43.719Z"
+      }
+    },
+    "sku-3001": {
+      "name": "Sourdough Loaves",
+      "description": "Case of 12 sourdough loaves",
+      "category": "bakery",
+      "unitOfMeasure": "case",
+      "basePrice": 45,
+      "imagePaths": [
+        "products/sku-3001/images/primary.jpg"
+      ],
+      "isActive": true,
+      "createdAt": {
+        "__timestamp": "2026-09-21T23:32:43.819Z"
+      },
+      "updatedAt": {
+        "__timestamp": "2026-09-21T23:32:43.819Z"
+      }
+    }
+  },
+  "categories": {
+    "bakery": {
+      "id": "bakery",
+      "name": "Bakery",
+      "description": "Breads and baked goods",
+      "sortOrder": 3
+    },
+    "dairy": {
+      "id": "dairy",
+      "name": "Dairy",
+      "description": "Milk, cheese, and dairy products",
+      "sortOrder": 2
+    },
+    "produce": {
+      "id": "produce",
+      "name": "Produce",
+      "description": "Fresh fruits and vegetables",
+      "sortOrder": 1
+    }
+  },
+  "photosBeforeSeed": {
+    "note": "Object versioning is on. To restore a teammate's original photo: gcloud storage cp '<object>#<previous>' '<object>' --project=it473-capstone-project",
+    "objects": {
+      "sku-1001": {
+        "object": "gs://it473-capstone-project-media/products/sku-1001/images/primary.jpg",
+        "current": 1790911774244676,
+        "previous": 1790037453735295
+      },
+      "sku-1002": {
+        "object": "gs://it473-capstone-project-media/products/sku-1002/images/primary.jpg",
+        "current": 1790911774599268,
+        "previous": 1790037456214877
+      },
+      "sku-2001": {
+        "object": "gs://it473-capstone-project-media/products/sku-2001/images/primary.jpg",
+        "current": 1790911775252163,
+        "previous": 1790037458442394
+      },
+      "sku-2002": {
+        "object": "gs://it473-capstone-project-media/products/sku-2002/images/primary.jpg",
+        "current": 1790911775463325,
+        "previous": 1790037460595193
+      },
+      "sku-3001": {
+        "object": "gs://it473-capstone-project-media/products/sku-3001/images/primary.jpg",
+        "current": 1790911775916026,
+        "previous": 1790037462902082
+      }
+    }
+  }
+}

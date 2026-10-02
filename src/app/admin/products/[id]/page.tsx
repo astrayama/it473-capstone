@@ -30,6 +30,8 @@ export default async function EditProductPage(props: PageProps<"/admin/products/
         initial={{
           id: product.id, sku: product.sku, name: product.name, description: product.description, category: product.category,
           unitOfMeasure: product.unitOfMeasure, priceCents: product.priceCents, imageUrl: product.imageUrl, active: product.active,
+          origin: product.origin, packSize: product.packSize, storage: product.storage, shelfLife: product.shelfLife,
+          notes: product.notes, season: product.season, certifications: product.certifications.join(", "),
           quantityOnHand: stock?.quantityOnHand ?? 0, reorderPoint: stock?.reorderPoint ?? 0, binLocation: stock?.binLocation ?? "",
         }}
       />

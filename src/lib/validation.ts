@@ -17,6 +17,14 @@ export const productCreateSchema = z.object({
     .regex(/^[a-z][a-z -]{0,19}$/, "Use a simple unit such as case, pack or bag"),
   priceCents: z.coerce.number().int().min(0),
   active: z.boolean().default(true),
+  // Optional buyer-facing details (see ProductDetails in lib/catalog.ts).
+  origin: z.string().trim().max(80).default(""),
+  packSize: z.string().trim().max(60).default(""),
+  storage: z.string().trim().max(60).default(""),
+  shelfLife: z.string().trim().max(60).default(""),
+  notes: z.string().trim().max(400).default(""),
+  season: z.string().trim().max(60).default(""),
+  certifications: z.array(z.string().trim().min(1).max(40)).max(8).default([]),
   // Stock fields live in Cloud SQL but are edited on the same form.
   quantityOnHand: z.coerce.number().int().min(0).default(0),
   reorderPoint: z.coerce.number().int().min(0).default(0),

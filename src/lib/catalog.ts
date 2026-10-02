@@ -15,12 +15,32 @@ import { UserFacingError } from "@/lib/errors";
  *     basePrice,                          // USD, e.g. 34.99 (double) or 45 (integer)
  *     unitOfMeasure,                      // "case" | "pack" | "bag" …
  *     imagePaths: ["products/sku-1001/images/primary.jpg"],   // media bucket objects
- *     isActive, createdAt, updatedAt      // Firestore Timestamps
+ *     isActive, createdAt, updatedAt,     // Firestore Timestamps
+ *     // optional details (all may be absent):
+ *     origin, packSize, storage, shelfLife, notes, season,   // strings
+ *     certifications                      // string[], e.g. ["USDA Organic"]
  *   }
  *
  * Stock levels are NOT here; they live in Cloud SQL (see inventory.ts).
  */
-export interface Product {
+/** Optional buyer-facing details. Empty string / empty list when a document doesn't set them. */
+export interface ProductDetails {
+  /** Where it's grown or made, e.g. "Central Valley, California". */
+  origin: string;
+  /** What's in one unit, e.g. "25 lb case", "12 × 1 qt". */
+  packSize: string;
+  /** e.g. "Refrigerated (34–38°F)". */
+  storage: string;
+  shelfLife: string;
+  /** Chef's notes: one or two sensory lines. */
+  notes: string;
+  season: string;
+  certifications: string[];
+}
+
+export const DETAIL_KEYS = ["origin", "packSize", "storage", "shelfLife", "notes", "season"] as const;
+
+export interface Product extends ProductDetails {
   /** Firestore document id, e.g. "sku-1001". */
   id: string;
   /** Display SKU, e.g. "SKU-1001". */
@@ -40,7 +60,7 @@ export interface Product {
   updatedAt: string;
 }
 
-export interface ProductInput {
+export interface ProductInput extends Partial<ProductDetails> {
   name: string;
   description: string;
   category: string;
@@ -81,7 +101,20 @@ function toProduct(id: string, data: FirebaseFirestore.DocumentData): Product {
     active: data.isActive !== false,
     createdAt: toIso(data.createdAt),
     updatedAt,
+    origin: text(data.origin),
+    packSize: text(data.packSize),
+    storage: text(data.storage),
+    shelfLife: text(data.shelfLife),
+    notes: text(data.notes),
+    season: text(data.season),
+    certifications: Array.isArray(data.certifications)
+      ? data.certifications.filter((c: unknown): c is string => typeof c === "string" && c.trim() !== "")
+      : [],
   };
+}
+
+function text(value: unknown): string {
+  return typeof value === "string" ? value.trim() : "";
 }
 
 /** App fields -> the team's Firestore field names. Only the keys present are written. */
@@ -93,6 +126,10 @@ function toFirestore(input: Partial<ProductInput>): Record<string, unknown> {
   if (input.unitOfMeasure !== undefined) out.unitOfMeasure = input.unitOfMeasure;
   if (input.priceCents !== undefined) out.basePrice = input.priceCents / 100;
   if (input.active !== undefined) out.isActive = input.active;
+  for (const key of DETAIL_KEYS) {
+    if (input[key] !== undefined) out[key] = input[key];
+  }
+  if (input.certifications !== undefined) out.certifications = input.certifications;
   return out;
 }
 
@@ -124,7 +161,9 @@ export async function searchProducts(opts: {
   if (opts.category) items = items.filter((p) => p.category === opts.category);
   if (opts.q) {
     const q = opts.q.trim().toLowerCase();
-    items = items.filter((p) => [p.name, p.sku, p.description].some((f) => f.toLowerCase().includes(q)));
+    items = items.filter((p) =>
+      [p.name, p.sku, p.description, p.origin, p.notes].some((f) => f.toLowerCase().includes(q)),
+    );
   }
   return items;
 }

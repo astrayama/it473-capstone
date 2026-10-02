@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ViewTransition } from "react";
+import { Fragment, ViewTransition } from "react";
 import { getProduct } from "@/lib/catalog";
 import { categoryLabel, listCategories } from "@/lib/categories";
 import { stockLevel, tryGetInventoryMap } from "@/lib/inventory";
@@ -64,6 +64,19 @@ export default async function ProductPage(props: PageProps<"/catalog/[id]">) {
             <p className="eyebrow">{category}</p>
             <h1 className="display-m mt-5">{product.name}</h1>
             {product.description && <p className="lede mt-6">{product.description}</p>}
+            {product.notes && (
+              <figure className="mt-8 border-t border-line pt-6">
+                <figcaption className="eyebrow mb-3">Chef&apos;s notes</figcaption>
+                <blockquote className="font-display text-2xl leading-snug text-fg italic">{product.notes}</blockquote>
+              </figure>
+            )}
+            {product.certifications.length > 0 && (
+              <ul className="mt-6 flex flex-wrap gap-2" aria-label="Certifications">
+                {product.certifications.map((c) => (
+                  <li key={c} className="badge badge-accent">{c}</li>
+                ))}
+              </ul>
+            )}
 
             <div className="mt-10">
               {showPrice ? (
@@ -90,12 +103,23 @@ export default async function ProductPage(props: PageProps<"/catalog/[id]">) {
             )}
 
             <dl className="ledger mt-12">
-              <dt>SKU</dt>
-              <dd className="numeric tracking-[0.06em]">{product.sku}</dd>
-              <dt>Sold by the</dt>
-              <dd className="capitalize">{product.unitOfMeasure}</dd>
-              <dt>Category</dt>
-              <dd>{category}</dd>
+              {[
+                ["SKU", product.sku],
+                ["Sold by the", product.unitOfMeasure],
+                ["Pack", product.packSize],
+                ["Origin", product.origin],
+                ["Storage", product.storage],
+                ["Shelf life", product.shelfLife],
+                ["Season", product.season],
+                ["Category", category],
+              ]
+                .filter(([, value]) => value)
+                .map(([term, value]) => (
+                  <Fragment key={term}>
+                    <dt>{term}</dt>
+                    <dd className={term === "SKU" ? "numeric tracking-[0.06em]" : term === "Sold by the" ? "capitalize" : undefined}>{value}</dd>
+                  </Fragment>
+                ))}
               {inventory && (
                 <>
                   <dt>Availability</dt>

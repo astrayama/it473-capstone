@@ -16,10 +16,21 @@ export interface ProductFormInitial {
   priceCents: number;
   imageUrl: string | null;
   active: boolean;
+  origin: string;
+  packSize: string;
+  storage: string;
+  shelfLife: string;
+  notes: string;
+  season: string;
+  /** Comma-separated in the form; a list in Firestore. */
+  certifications: string;
   quantityOnHand: number;
   reorderPoint: number;
   binLocation: string | null;
 }
+
+/** Suggestions for the storage field (free text is still allowed). */
+const STORAGE_OPTIONS = ["Refrigerated (34–38°F)", "Frozen (0°F)", "Cool (50–60°F)", "Ambient, cool and dry"];
 
 export interface CategoryOption {
   id: string;
@@ -49,7 +60,8 @@ export function ProductForm({ initial, categories }: Props) {
   const [form, setForm] = useState<ProductFormInitial>(
     initial ?? {
       sku: "", name: "", description: "", category: categories[0]?.id ?? "", unitOfMeasure: "case", priceCents: 0,
-      imageUrl: null, active: true, quantityOnHand: 0, reorderPoint: 0, binLocation: "",
+      imageUrl: null, active: true, origin: "", packSize: "", storage: "", shelfLife: "", notes: "", season: "",
+      certifications: "", quantityOnHand: 0, reorderPoint: 0, binLocation: "",
     },
   );
   const [priceDollars, setPriceDollars] = useState(((initial?.priceCents ?? 0) / 100).toFixed(2));
@@ -87,6 +99,13 @@ export function ProductForm({ initial, categories }: Props) {
         unitOfMeasure: form.unitOfMeasure,
         priceCents: Math.round(Number(priceDollars) * 100),
         active: form.active,
+        origin: form.origin,
+        packSize: form.packSize,
+        storage: form.storage,
+        shelfLife: form.shelfLife,
+        notes: form.notes,
+        season: form.season,
+        certifications: form.certifications.split(",").map((c) => c.trim()).filter(Boolean),
         quantityOnHand: form.quantityOnHand,
         reorderPoint: form.reorderPoint,
         binLocation: form.binLocation || null,
@@ -206,6 +225,43 @@ export function ProductForm({ initial, categories }: Props) {
           <div className="sm:col-span-2">
             <label className="label" htmlFor="description">Description</label>
             <textarea id="description" rows={4} className="input" value={form.description} onChange={(e) => update("description", e.target.value)} />
+          </div>
+        </div>
+
+        <h2 className="rule pt-6 text-title-m">Buyer details</h2>
+        <p className="hint -mt-3">Optional. Shown on the product page and catalog cards.</p>
+        <div className="grid gap-5 sm:grid-cols-2">
+          <div>
+            <label className="label" htmlFor="origin">Origin</label>
+            <input id="origin" className="input" value={form.origin} onChange={(e) => update("origin", e.target.value)} placeholder="Central Valley, California" />
+          </div>
+          <div>
+            <label className="label" htmlFor="packSize">Pack</label>
+            <input id="packSize" className="input" value={form.packSize} onChange={(e) => update("packSize", e.target.value)} placeholder="25 lb case" />
+          </div>
+          <div>
+            <label className="label" htmlFor="storage">Storage</label>
+            <input id="storage" className="input" list="storage-options" value={form.storage} onChange={(e) => update("storage", e.target.value)} placeholder="Refrigerated (34–38°F)" />
+            <datalist id="storage-options">
+              {STORAGE_OPTIONS.map((o) => <option key={o} value={o} />)}
+            </datalist>
+          </div>
+          <div>
+            <label className="label" htmlFor="shelfLife">Shelf life</label>
+            <input id="shelfLife" className="input" value={form.shelfLife} onChange={(e) => update("shelfLife", e.target.value)} placeholder="7–10 days" />
+          </div>
+          <div>
+            <label className="label" htmlFor="season">Season</label>
+            <input id="season" className="input" value={form.season} onChange={(e) => update("season", e.target.value)} placeholder="Year-round" />
+          </div>
+          <div>
+            <label className="label" htmlFor="certifications">Certifications</label>
+            <input id="certifications" className="input" value={form.certifications} onChange={(e) => update("certifications", e.target.value)} placeholder="USDA Organic, Grass-fed" aria-describedby="cert-hint" />
+            <p id="cert-hint" className="hint">Separate with commas.</p>
+          </div>
+          <div className="sm:col-span-2">
+            <label className="label" htmlFor="notes">Chef&apos;s notes</label>
+            <textarea id="notes" rows={2} className="input" value={form.notes} onChange={(e) => update("notes", e.target.value)} placeholder="One or two sensory lines: taste, texture, how it cooks." />
           </div>
         </div>
 

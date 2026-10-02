@@ -31,10 +31,13 @@ You do not need any technical knowledge for this. Everything happens in your web
    * **Price per unit** in dollars.
    * **Visible in the catalog** – untick to hide a product without archiving it.
    * **Description** – a sentence or two, e.g. *Case of organic Roma tomatoes, 25 lb*.
-3. Under **Stock**, enter the number **On hand**, the **Low-stock alert** level, and the
+3. Optional **Buyer details**: origin, pack (e.g. *25 lb case*), storage, shelf life, season,
+   certifications (comma-separated) and a line or two of **Chef's notes**. They appear on the
+   product page and the catalog cards.
+4. Under **Stock**, enter the number **On hand**, the **Low-stock alert** level, and the
    warehouse **bin** if you use them.
-4. Optional: choose a **Photo** (JPEG, PNG or WebP, under 5 MB).
-5. Click **Add product**. It appears in the catalog immediately.
+5. Optional: choose a **Photo** (JPEG, PNG or WebP, under 5 MB).
+6. Click **Add product**. It appears in the catalog immediately.
 
 ## Changing a price, photo, or description
 

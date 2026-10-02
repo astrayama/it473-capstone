@@ -44,6 +44,9 @@ export function ProductCard({ product, categoryLabel, inventory, showPrice, canO
           <Link href={href} className="transition-colors hover:text-accent-ink">{product.name}</Link>
         </h3>
         {product.description && <p className="mt-2 line-clamp-2 text-sm text-fg-2">{product.description}</p>}
+        {(product.packSize || product.origin) && (
+          <p className="meta mt-3 text-xs">{[product.packSize, product.origin].filter(Boolean).join(" · ")}</p>
+        )}
         <div className="mt-auto flex flex-wrap items-end justify-between gap-4 pt-5">
           {showPrice ? (
             <Price cents={product.priceCents} unit={product.unitOfMeasure} />

@@ -44,9 +44,15 @@ The document id doubles as the SKU: `sku-1001` is shown as **SKU-1001**.
 | imagePaths | string[] | media-bucket object paths; the first is the primary photo |
 | isActive | boolean | `false` = archived (hidden from the storefront; never deleted by the app) |
 | createdAt, updatedAt | Timestamp | `updatedAt` also versions the photo URL for caching |
+| origin, packSize, storage, shelfLife, notes, season | string, optional | buyer details shown on cards and the product page (`notes` = chef's notes) |
+| certifications | string[], optional | e.g. `["USDA Organic"]`, shown as badges |
 
 Writes use `create()` (fails if the SKU exists) and `update()` with only these fields, so any
 extra fields a teammate adds survive.
+
+`seed/catalog.json` holds the demo catalog (24 products across 7 categories) and
+`npm run seed:catalog` writes it; see the script header for flags. `seed/backup/` keeps the
+catalog as it was before the first seed, including the bucket versions of the original photos.
 
 ### Firestore `categories/{id}`
 | Field | Type | Notes |
@@ -54,8 +60,9 @@ extra fields a teammate adds survive.
 | name, description | string | shown on the home page tiles and catalog filters |
 | sortOrder | string | numeric text (`"1"`, `"2"`, …); sorted numerically |
 
-Category cover photos are chosen in `src/config/photos.ts` (`produce`, `dairy`, `bakery`);
-any other category gets the default pantry cover.
+Category cover photos are chosen in `src/config/photos.ts` for the seven seeded categories
+(produce, dairy, bakery, butchery-seafood, pantry, charcuterie-cheese, beverages); any other
+category gets the default pantry cover.
 
 ### Cloud SQL (see `prisma/schema.prisma`)
 * `Customer` — one per wholesale account; `firebaseUid` links to the Firebase Auth user;

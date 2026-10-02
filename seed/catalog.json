@@ -1,0 +1,566 @@
+{
+  "categories": [
+    {
+      "id": "butchery-seafood",
+      "name": "Butchery & Seafood",
+      "description": "Dry-aged beef, heritage pork and wild-caught seafood",
+      "sortOrder": "4"
+    },
+    {
+      "id": "pantry",
+      "name": "Pantry",
+      "description": "Oils, vinegars, grains and finishing salts",
+      "sortOrder": "5"
+    },
+    {
+      "id": "charcuterie-cheese",
+      "name": "Charcuterie & Cheese",
+      "description": "Cured meats and aged cheeses",
+      "sortOrder": "6"
+    },
+    {
+      "id": "beverages",
+      "name": "Beverages",
+      "description": "Coffee, tea and cold-pressed cider",
+      "sortOrder": "7"
+    }
+  ],
+  "products": [
+    {
+      "id": "sku-1001",
+      "name": "Organic Roma Tomatoes",
+      "category": "produce",
+      "unitOfMeasure": "case",
+      "basePrice": 34.99,
+      "description": "Vine-ripened organic Romas, hand-sorted and packed 25 lb to the case.",
+      "origin": "Central Valley, California",
+      "packSize": "25 lb case",
+      "storage": "Cool (50–60°F)",
+      "shelfLife": "7–10 days",
+      "notes": "Dense, low-moisture flesh that holds its shape through a long braise: the backbone of a house marinara.",
+      "certifications": [
+        "USDA Organic"
+      ],
+      "season": "Peak Jul–Oct",
+      "photo": {
+        "file": "seed/images/sku-1001.jpg",
+        "photographer": "Zoshua Colah",
+        "profileUrl": "https://unsplash.com/@zoshuacolah",
+        "sourceUrl": "https://unsplash.com/photos/9Jm4x7l9KrI"
+      }
+    },
+    {
+      "id": "sku-1002",
+      "name": "Romaine Hearts",
+      "category": "produce",
+      "unitOfMeasure": "case",
+      "basePrice": 28.5,
+      "description": "Trimmed romaine hearts, 24 to the case, washed-ready for the line.",
+      "origin": "Salinas Valley, California",
+      "packSize": "24 ct case",
+      "storage": "Refrigerated (34–38°F)",
+      "shelfLife": "10–14 days",
+      "notes": "Crisp, sweet hearts with tight ribs, built for Caesar service and a hard char on the grill.",
+      "certifications": [],
+      "season": "Year-round",
+      "photo": {
+        "file": "seed/images/sku-1002.jpg",
+        "photographer": "Erda Estremera",
+        "profileUrl": "https://unsplash.com/@erdaest",
+        "sourceUrl": "https://unsplash.com/photos/clno5uJrr_k"
+      }
+    },
+    {
+      "id": "sku-1003",
+      "name": "Rainbow Heirloom Carrots",
+      "category": "produce",
+      "unitOfMeasure": "case",
+      "basePrice": 38.0,
+      "description": "Purple, yellow and orange heirloom carrots, bunched with their greens.",
+      "origin": "Willamette Valley, Oregon",
+      "packSize": "24 bunches",
+      "storage": "Refrigerated (34–38°F)",
+      "shelfLife": "14–21 days",
+      "notes": "Earthy-sweet and vivid. Roast whole and plate them tops-on.",
+      "certifications": [
+        "USDA Organic"
+      ],
+      "season": "Year-round, peak Sep–Dec",
+      "photo": {
+        "file": "seed/images/sku-1003.jpg",
+        "photographer": "Anna Przepiorka",
+        "profileUrl": "https://unsplash.com/@myphotoland",
+        "sourceUrl": "https://unsplash.com/photos/PUakmrBpqzQ"
+      }
+    },
+    {
+      "id": "sku-1004",
+      "name": "Wild Golden Chanterelles",
+      "category": "produce",
+      "unitOfMeasure": "case",
+      "basePrice": 119.0,
+      "description": "Hand-foraged golden chanterelles, brushed clean and packed in vented flats.",
+      "origin": "Pacific Northwest",
+      "packSize": "5 lb case",
+      "storage": "Refrigerated (34–38°F)",
+      "shelfLife": "5–7 days",
+      "notes": "Apricot-scented and meaty. Sear hot in brown butter and finish with thyme.",
+      "certifications": [
+        "Wild-foraged"
+      ],
+      "season": "Jul–Nov",
+      "photo": {
+        "file": "seed/images/sku-1004.jpg",
+        "photographer": "Haberdoedas",
+        "profileUrl": "https://unsplash.com/@haberdoedas",
+        "sourceUrl": "https://unsplash.com/photos/PeQzrPeqEmE"
+      }
+    },
+    {
+      "id": "sku-2001",
+      "name": "Grass-Fed Whole Milk",
+      "category": "dairy",
+      "unitOfMeasure": "pack",
+      "basePrice": 18.75,
+      "description": "Cream-line whole milk from grass-fed herds, gently pasteurized and never homogenized.",
+      "origin": "Northeast Iowa",
+      "packSize": "4 × 1 gal",
+      "storage": "Refrigerated (34–38°F)",
+      "shelfLife": "14 days from pack",
+      "notes": "Sweet and grassy with a full body that steams into silky microfoam and rich custards.",
+      "certifications": [
+        "Grass-fed"
+      ],
+      "season": "Year-round",
+      "photo": {
+        "file": "seed/images/sku-2001.jpg",
+        "photographer": "Melody Zimmerman",
+        "profileUrl": "https://unsplash.com/@prairiepilgrim",
+        "sourceUrl": "https://unsplash.com/photos/UhvWsG3SpQE"
+      }
+    },
+    {
+      "id": "sku-2002",
+      "name": "Burrata, Hand-Tied",
+      "category": "dairy",
+      "unitOfMeasure": "case",
+      "basePrice": 56.0,
+      "description": "Hand-tied burrata: a fresh mozzarella shell around a heart of stracciatella and cream.",
+      "origin": "Wisconsin",
+      "packSize": "8 × 8 oz",
+      "storage": "Refrigerated (34–38°F)",
+      "shelfLife": "10 days",
+      "notes": "Tear it open at the table so the cream spills over ripe tomatoes and good oil.",
+      "certifications": [],
+      "season": "Year-round",
+      "photo": {
+        "file": "seed/images/sku-2002.jpg",
+        "photographer": "Paras Kapoor",
+        "profileUrl": "https://unsplash.com/@kapoorparas28",
+        "sourceUrl": "https://unsplash.com/photos/NNTV0JhNmis"
+      }
+    },
+    {
+      "id": "sku-2003",
+      "name": "Pasture-Raised Eggs",
+      "category": "dairy",
+      "unitOfMeasure": "case",
+      "basePrice": 64.0,
+      "description": "Large brown eggs from hens on rotated pasture, graded and packed within a day of laying.",
+      "origin": "Central Iowa",
+      "packSize": "15 dozen",
+      "storage": "Refrigerated (34–38°F)",
+      "shelfLife": "45 days",
+      "notes": "Deep-orange yolks that stand tall in the pan and turn custards and pasta dough golden.",
+      "certifications": [
+        "Pasture-raised"
+      ],
+      "season": "Year-round",
+      "photo": {
+        "file": "seed/images/sku-2003.jpg",
+        "photographer": "Brandon Romanchuk",
+        "profileUrl": "https://unsplash.com/@currentspaces",
+        "sourceUrl": "https://unsplash.com/photos/M3hyq26WR4U"
+      }
+    },
+    {
+      "id": "sku-3001",
+      "name": "Country Sourdough Loaves",
+      "category": "bakery",
+      "unitOfMeasure": "case",
+      "basePrice": 45.0,
+      "description": "Naturally leavened country loaves, baked the morning they ship.",
+      "origin": "Des Moines, Iowa",
+      "packSize": "12 loaves",
+      "storage": "Ambient, cool and dry",
+      "shelfLife": "3 days; freezes 3 months",
+      "notes": "A three-day leaven, blistered crust and an open, custardy crumb.",
+      "certifications": [],
+      "season": "Year-round",
+      "photo": {
+        "file": "seed/images/sku-3001.jpg",
+        "photographer": "Summer Time",
+        "profileUrl": "https://unsplash.com/@summertime_studio",
+        "sourceUrl": "https://unsplash.com/photos/SuCty-PXrq0"
+      }
+    },
+    {
+      "id": "sku-3002",
+      "name": "Butter Croissants, Ready-to-Bake",
+      "category": "bakery",
+      "unitOfMeasure": "case",
+      "basePrice": 72.0,
+      "description": "All-butter croissants, laminated and frozen raw for baking on site.",
+      "origin": "Minneapolis, Minnesota",
+      "packSize": "60 ct",
+      "storage": "Frozen (0°F)",
+      "shelfLife": "6 months frozen",
+      "notes": "Bake from frozen for shattering, honeycombed layers and a deep amber shine.",
+      "certifications": [],
+      "season": "Year-round",
+      "photo": {
+        "file": "seed/images/sku-3002.jpg",
+        "photographer": "Mae Mu",
+        "profileUrl": "https://unsplash.com/@picoftasty",
+        "sourceUrl": "https://unsplash.com/photos/m9pzwmxm2rk"
+      }
+    },
+    {
+      "id": "sku-3003",
+      "name": "Rosemary Focaccia Sheets",
+      "category": "bakery",
+      "unitOfMeasure": "case",
+      "basePrice": 54.0,
+      "description": "Par-baked half-sheet focaccia, dimpled with olive oil, rosemary and flaky salt.",
+      "origin": "Chicago, Illinois",
+      "packSize": "6 half sheets",
+      "storage": "Frozen (0°F)",
+      "shelfLife": "4 months frozen",
+      "notes": "Ten minutes in a hot oven returns a crackling crust and a tender, oil-rich crumb.",
+      "certifications": [],
+      "season": "Year-round",
+      "photo": {
+        "file": "seed/images/sku-3003.jpg",
+        "photographer": "Diego Arenas de Rodrigo",
+        "profileUrl": "https://unsplash.com/@diegoarenasderodrigo",
+        "sourceUrl": "https://unsplash.com/photos/bPh3nhjDSRA"
+      }
+    },
+    {
+      "id": "sku-4001",
+      "name": "Dry-Aged Prime Ribeye",
+      "category": "butchery-seafood",
+      "unitOfMeasure": "case",
+      "basePrice": 389.0,
+      "description": "Bone-in USDA Prime rib roasts, dry-aged 28 days. Priced per case at average weight.",
+      "origin": "Nebraska",
+      "packSize": "2 roasts, approx. 18 lb",
+      "storage": "Refrigerated (34–38°F)",
+      "shelfLife": "14 days vacuum-sealed",
+      "notes": "Deeply marbled with a nutty, almost blue-cheese savor that only time builds.",
+      "certifications": [
+        "USDA Prime"
+      ],
+      "season": "Year-round",
+      "photo": {
+        "file": "seed/images/sku-4001.jpg",
+        "photographer": "Jakob Trost",
+        "profileUrl": "https://unsplash.com/@jwtrost",
+        "sourceUrl": "https://unsplash.com/photos/SckH8spaAtk"
+      }
+    },
+    {
+      "id": "sku-4002",
+      "name": "Heritage Berkshire Pork Chops",
+      "category": "butchery-seafood",
+      "unitOfMeasure": "case",
+      "basePrice": 168.0,
+      "description": "Frenched, bone-in Berkshire chops, cut 10 oz.",
+      "origin": "Southern Iowa",
+      "packSize": "24 × 10 oz",
+      "storage": "Refrigerated (34–38°F)",
+      "shelfLife": "10 days",
+      "notes": "Marbled heritage pork with sweet, clean fat. Brine lightly and sear hard.",
+      "certifications": [
+        "Pasture-raised"
+      ],
+      "season": "Year-round",
+      "photo": {
+        "file": "seed/images/sku-4002.jpg",
+        "photographer": "jackson kondili",
+        "profileUrl": "https://unsplash.com/@jax969",
+        "sourceUrl": "https://unsplash.com/photos/IlpNFRtObdk"
+      }
+    },
+    {
+      "id": "sku-4003",
+      "name": "Wild Gulf Shrimp, U-12",
+      "category": "butchery-seafood",
+      "unitOfMeasure": "case",
+      "basePrice": 189.0,
+      "description": "Head-off, shell-on wild shrimp, 12 or fewer to the pound, frozen at sea.",
+      "origin": "Gulf of Mexico",
+      "packSize": "10 lb case",
+      "storage": "Frozen (0°F)",
+      "shelfLife": "9 months frozen",
+      "notes": "Sweet, firm and briny. Grill in the shell or butterfly for scampi.",
+      "certifications": [
+        "Wild-caught"
+      ],
+      "season": "Year-round",
+      "photo": {
+        "file": "seed/images/sku-4003.jpg",
+        "photographer": "blackieshoot",
+        "profileUrl": "https://unsplash.com/@blackieshoot",
+        "sourceUrl": "https://unsplash.com/photos/6eSTiaDe9mU"
+      }
+    },
+    {
+      "id": "sku-4004",
+      "name": "Wild King Salmon Fillets",
+      "category": "butchery-seafood",
+      "unitOfMeasure": "case",
+      "basePrice": 329.0,
+      "description": "Skin-on king salmon fillets, pin-bone out, shipped fresh on ice.",
+      "origin": "Southeast Alaska",
+      "packSize": "10 lb case",
+      "storage": "Refrigerated (34–38°F)",
+      "shelfLife": "4 days",
+      "notes": "Deep red, rich and buttery; the skin crisps beautifully over medium heat.",
+      "certifications": [
+        "Wild-caught"
+      ],
+      "season": "May–Sep",
+      "photo": {
+        "file": "seed/images/sku-4004.jpg",
+        "photographer": "Jonas Allert",
+        "profileUrl": "https://unsplash.com/@visuallert",
+        "sourceUrl": "https://unsplash.com/photos/MZ0U0g6RQpQ"
+      }
+    },
+    {
+      "id": "sku-5001",
+      "name": "Early Harvest Olive Oil",
+      "category": "pantry",
+      "unitOfMeasure": "case",
+      "basePrice": 156.0,
+      "description": "Cold-extracted extra virgin olive oil from green, early-harvest Coratina olives.",
+      "origin": "Puglia, Italy",
+      "packSize": "4 × 3 L tins",
+      "storage": "Ambient, cool and dry",
+      "shelfLife": "18 months unopened",
+      "notes": "Grassy and peppery with a green-almond finish. For finishing, not frying.",
+      "certifications": [
+        "Extra virgin"
+      ],
+      "season": "New harvest each November",
+      "photo": {
+        "file": "seed/images/sku-5001.jpg",
+        "photographer": "blackieshoot",
+        "profileUrl": "https://unsplash.com/@blackieshoot",
+        "sourceUrl": "https://unsplash.com/photos/vfe8ICuwMeI"
+      }
+    },
+    {
+      "id": "sku-5002",
+      "name": "12-Year Balsamic Vinegar",
+      "category": "pantry",
+      "unitOfMeasure": "case",
+      "basePrice": 96.0,
+      "description": "Barrel-aged balsamic vinegar of Modena, aged twelve years in wood.",
+      "origin": "Modena, Italy",
+      "packSize": "6 × 250 ml",
+      "storage": "Ambient, cool and dry",
+      "shelfLife": "Indefinite",
+      "notes": "Syrupy, figgy and bright. A few drops over strawberries or aged cheese.",
+      "certifications": [
+        "IGP"
+      ],
+      "season": "Year-round",
+      "photo": {
+        "file": "seed/images/sku-5002.jpg",
+        "photographer": "Caroline Attwood",
+        "profileUrl": "https://unsplash.com/@_carolineattwood",
+        "sourceUrl": "https://unsplash.com/photos/uaMwBQ_wjng"
+      }
+    },
+    {
+      "id": "sku-5003",
+      "name": "Stone-Milled Heirloom Polenta",
+      "category": "pantry",
+      "unitOfMeasure": "bag",
+      "basePrice": 42.0,
+      "description": "Coarse-ground heirloom yellow corn, milled slowly on stone.",
+      "origin": "Southern Indiana",
+      "packSize": "25 lb bag",
+      "storage": "Ambient, cool and dry",
+      "shelfLife": "6 months; freezes 1 year",
+      "notes": "Cooks up creamy and sweet with a toasty corn depth. Finish with butter and aged cheese.",
+      "certifications": [
+        "Non-GMO"
+      ],
+      "season": "Year-round",
+      "photo": {
+        "file": "seed/images/sku-5003.jpg",
+        "photographer": "Zhang liven",
+        "profileUrl": "https://unsplash.com/@lvenfoto",
+        "sourceUrl": "https://unsplash.com/photos/YUPRlhW5grg"
+      }
+    },
+    {
+      "id": "sku-5004",
+      "name": "Flaky Sea Salt",
+      "category": "pantry",
+      "unitOfMeasure": "case",
+      "basePrice": 78.0,
+      "description": "Hand-harvested pyramid flake salt from cold Pacific seawater.",
+      "origin": "Oregon coast",
+      "packSize": "6 × 3 lb tubs",
+      "storage": "Ambient, cool and dry",
+      "shelfLife": "Indefinite",
+      "notes": "Hollow flakes with a clean, bright crunch: the last thing on every plate.",
+      "certifications": [],
+      "season": "Year-round",
+      "photo": {
+        "file": "seed/images/sku-5004.jpg",
+        "photographer": "Kamakshi subramani",
+        "profileUrl": "https://unsplash.com/@prasi898",
+        "sourceUrl": "https://unsplash.com/photos/4LIq0p11QgU"
+      }
+    },
+    {
+      "id": "sku-6001",
+      "name": "Parmigiano Reggiano, 24-Month",
+      "category": "charcuterie-cheese",
+      "unitOfMeasure": "case",
+      "basePrice": 289.0,
+      "description": "Wedges cut from 24-month wheels, vacuum-packed for the line or the counter.",
+      "origin": "Emilia-Romagna, Italy",
+      "packSize": "2 × 9 lb wedges",
+      "storage": "Refrigerated (34–38°F)",
+      "shelfLife": "6 months",
+      "notes": "Crunchy crystals, brown butter and a whisper of pineapple. Shave generously.",
+      "certifications": [
+        "PDO"
+      ],
+      "season": "Year-round",
+      "photo": {
+        "file": "seed/images/sku-6001.jpg",
+        "photographer": "Elio Santos",
+        "profileUrl": "https://unsplash.com/@eliomendes",
+        "sourceUrl": "https://unsplash.com/photos/nz1JQ2pKq-s"
+      }
+    },
+    {
+      "id": "sku-6002",
+      "name": "Prosciutto di Parma, 18-Month",
+      "category": "charcuterie-cheese",
+      "unitOfMeasure": "each",
+      "basePrice": 268.0,
+      "description": "Boneless prosciutto di Parma, pressed and ready for the slicer.",
+      "origin": "Parma, Italy",
+      "packSize": "Approx. 15 lb each",
+      "storage": "Refrigerated (34–38°F)",
+      "shelfLife": "120 days unopened",
+      "notes": "Silky, sweet and delicately salted. Slice paper-thin; serve at room temperature.",
+      "certifications": [
+        "PDO"
+      ],
+      "season": "Year-round",
+      "photo": {
+        "file": "seed/images/sku-6002.jpg",
+        "photographer": "David B Townsend",
+        "profileUrl": "https://unsplash.com/@dbtownsend",
+        "sourceUrl": "https://unsplash.com/photos/ppN7TyeaQK0"
+      }
+    },
+    {
+      "id": "sku-6003",
+      "name": "Cave-Aged Gruyère",
+      "category": "charcuterie-cheese",
+      "unitOfMeasure": "case",
+      "basePrice": 229.0,
+      "description": "Gruyère aged twelve months, cut into half-wheel wedges.",
+      "origin": "Fribourg, Switzerland",
+      "packSize": "2 × 10 lb wedges",
+      "storage": "Refrigerated (34–38°F)",
+      "shelfLife": "4 months",
+      "notes": "Nutty and brothy with a long savory finish. Melts silkily into gratins and fondue.",
+      "certifications": [
+        "AOP"
+      ],
+      "season": "Year-round",
+      "photo": {
+        "file": "seed/images/sku-6003.jpg",
+        "photographer": "Elio Santos",
+        "profileUrl": "https://unsplash.com/@eliomendes",
+        "sourceUrl": "https://unsplash.com/photos/rwK9YtNqHCY"
+      }
+    },
+    {
+      "id": "sku-7001",
+      "name": "Ethiopia Yirgacheffe Espresso",
+      "category": "beverages",
+      "unitOfMeasure": "bag",
+      "basePrice": 74.0,
+      "description": "Washed-process specialty coffee, roasted for espresso the week it ships.",
+      "origin": "Yirgacheffe, Ethiopia",
+      "packSize": "5 lb bag",
+      "storage": "Ambient, cool and dry",
+      "shelfLife": "Best within 30 days of roast",
+      "notes": "Jasmine, bergamot and stone fruit. Pulls bright and syrupy.",
+      "certifications": [
+        "Specialty grade"
+      ],
+      "season": "Year-round",
+      "photo": {
+        "file": "seed/images/sku-7001.jpg",
+        "photographer": "Daniel Tafjord",
+        "profileUrl": "https://unsplash.com/@danieltafjord",
+        "sourceUrl": "https://unsplash.com/photos/YOIpCvyuhWg"
+      }
+    },
+    {
+      "id": "sku-7002",
+      "name": "Cold-Pressed Heirloom Apple Cider",
+      "category": "beverages",
+      "unitOfMeasure": "case",
+      "basePrice": 39.0,
+      "description": "Unfiltered cider pressed from heirloom orchard apples.",
+      "origin": "Door County, Wisconsin",
+      "packSize": "6 × 64 oz",
+      "storage": "Refrigerated (34–38°F)",
+      "shelfLife": "21 days",
+      "notes": "Tart and honeyed. Pour it cold or mull it with spice.",
+      "certifications": [],
+      "season": "Sep–Jan",
+      "photo": {
+        "file": "seed/images/sku-7002.jpg",
+        "photographer": "Birlean Alexandra",
+        "profileUrl": "https://unsplash.com/@birli",
+        "sourceUrl": "https://unsplash.com/photos/xB_tgyJkNDY"
+      }
+    },
+    {
+      "id": "sku-7003",
+      "name": "First Flush Darjeeling",
+      "category": "beverages",
+      "unitOfMeasure": "bag",
+      "basePrice": 118.0,
+      "description": "Spring-plucked loose-leaf Darjeeling, sealed in foil-lined bags.",
+      "origin": "Darjeeling, India",
+      "packSize": "1 kg bag",
+      "storage": "Ambient, cool and dry",
+      "shelfLife": "12 months",
+      "notes": "Muscatel and spring flowers, light and brisk. Steep 3 minutes at 195°F.",
+      "certifications": [],
+      "season": "Spring harvest",
+      "photo": {
+        "file": "seed/images/sku-7003.jpg",
+        "photographer": "Alex kristanas",
+        "profileUrl": "https://unsplash.com/@devdvr",
+        "sourceUrl": "https://unsplash.com/photos/5y3aYcjvzq8"
+      }
+    }
+  ]
+}

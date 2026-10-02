@@ -95,7 +95,8 @@ Demo logins created by the seed (change these before going live):
 | `npm run db:migrate` | Create a new migration after editing `prisma/schema.prisma` (dev) |
 | `npm run db:deploy` | Apply committed migrations (what the Cloud Run Job runs) |
 | `npm run db:studio` | Prisma Studio, a GUI for the Cloud SQL tables |
-| `npm run seed` | Load demo data |
+| `npm run seed` | Load demo data (stock rows for the catalog, demo accounts) |
+| `npm run seed:catalog` | Write the demo catalog in `seed/catalog.json` to Firestore and upload its photos (`--dry-run`, `--skip-images`, `--images-only`) |
 
 ## Deploying
 
