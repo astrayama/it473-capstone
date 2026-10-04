@@ -1,24 +1,39 @@
 import { z } from "zod";
-import { categoryIds, storageTypes } from "@/config/categories";
 
-export const productSchema = z.object({
+/**
+ * Add-product form. Catalog fields go to Firestore `catalog/{sku-id}` (see lib/catalog.ts);
+ * stock fields go to Cloud SQL. The category is checked against Firestore `categories`
+ * by the route handler.
+ */
+export const productCreateSchema = z.object({
   sku: z.string().trim().min(1, "SKU is required").max(40),
   name: z.string().trim().min(2, "Name is required").max(120),
   description: z.string().trim().max(2000).default(""),
-  category: z.enum(categoryIds),
-  brand: z.string().trim().max(80).default(""),
-  packSize: z.string().trim().min(1, "Pack size is required (e.g. 12 × 32 oz)").max(60),
-  unitsPerCase: z.coerce.number().int().min(1).max(10000),
-  casePriceCents: z.coerce.number().int().min(0),
-  storage: z.enum(storageTypes),
-  imageUrl: z.string().url().nullable().default(null),
+  category: z.string().trim().min(1, "Choose a category"),
+  unitOfMeasure: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .regex(/^[a-z][a-z -]{0,19}$/, "Use a simple unit such as case, pack or bag"),
+  priceCents: z.coerce.number().int().min(0),
   active: z.boolean().default(true),
+  // Optional buyer-facing details (see ProductDetails in lib/catalog.ts).
+  origin: z.string().trim().max(80).default(""),
+  packSize: z.string().trim().max(60).default(""),
+  storage: z.string().trim().max(60).default(""),
+  shelfLife: z.string().trim().max(60).default(""),
+  notes: z.string().trim().max(400).default(""),
+  season: z.string().trim().max(60).default(""),
+  certifications: z.array(z.string().trim().min(1).max(40)).max(8).default([]),
   // Stock fields live in Cloud SQL but are edited on the same form.
   quantityOnHand: z.coerce.number().int().min(0).default(0),
   reorderPoint: z.coerce.number().int().min(0).default(0),
   binLocation: z.string().trim().max(40).nullable().default(null),
 });
-export type ProductFormValues = z.input<typeof productSchema>;
+export type ProductFormValues = z.input<typeof productCreateSchema>;
+
+/** Edit-product form. The SKU is the Firestore document id, so it can't change. */
+export const productUpdateSchema = productCreateSchema.omit({ sku: true });
 
 export const inventoryPatchSchema = z.object({
   quantityOnHand: z.coerce.number().int().min(0).optional(),

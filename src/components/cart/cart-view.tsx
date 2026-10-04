@@ -4,7 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { useCart } from "@/components/cart/cart-store";
 import { ProductImage } from "@/components/product-image";
-import { formatCents } from "@/lib/format";
+import { formatCents, perUnit } from "@/lib/format";
+import { EmptyState } from "@/components/empty-state";
 
 interface Props {
   signedIn: boolean;
@@ -46,73 +47,77 @@ export function CartView({ signedIn, canOrder, accountStatus, stripeConfigured, 
 
   if (cart.items.length === 0) {
     return (
-      <div className="card text-center">
-        <p className="text-neutral-600">Your cart is empty.</p>
-        <Link href="/catalog" className="btn-primary mt-4">Browse the catalog</Link>
-      </div>
+      <EmptyState title="Your order is empty." action={<Link href="/catalog" className="btn-primary">Enter the catalog</Link>}>
+        Add provisions from the catalog and they will wait for you here.
+      </EmptyState>
     );
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
-      <div className="card p-0">
-        {cancelled && <p className="alert-info m-4">Payment was cancelled. Your cart is still here.</p>}
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Item</th>
-              <th>Case price</th>
-              <th>Cases</th>
-              <th className="text-right">Total</th>
-              <th />
-            </tr>
-          </thead>
-          <tbody>
-            {cart.items.map((item) => (
-              <tr key={item.productId}>
-                <td>
-                  <div className="flex items-center gap-3">
-                    <ProductImage src={item.imageUrl} category={item.category} alt="" size={48} />
-                    <div>
-                      <Link href={`/catalog/${item.slug}`} className="font-medium hover:underline">{item.name}</Link>
-                      <div className="text-xs text-neutral-500">{item.packSize} · SKU {item.sku}</div>
-                    </div>
-                  </div>
-                </td>
-                <td>{formatCents(item.casePriceCents)}</td>
-                <td>
-                  <input
-                    type="number"
-                    min={0}
-                    value={item.quantity}
-                    onChange={(e) => cart.setQuantity(item.productId, Number(e.target.value) || 0)}
-                    className="input w-20"
-                    aria-label={`Cases of ${item.name}`}
-                  />
-                </td>
-                <td className="text-right font-medium">{formatCents(item.casePriceCents * item.quantity)}</td>
-                <td className="text-right">
-                  <button type="button" onClick={() => cart.remove(item.productId)} className="text-xs text-red-600 hover:underline">
-                    Remove
-                  </button>
-                </td>
+    <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_22rem]">
+      <div>
+        {cancelled && <p className="alert-info mb-6">Payment was cancelled. Your order is still here.</p>}
+        <div className="table-wrap">
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>Price</th>
+                <th>Qty</th>
+                <th className="text-right">Total</th>
+                <th><span className="sr-only">Remove</span></th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {cart.items.map((item) => (
+                <tr key={item.productId}>
+                  <td>
+                    <div className="flex items-center gap-4">
+                      <ProductImage src={item.imageUrl} alt="" aspect="1/1" sizes="56px" className="w-14 shrink-0 rounded-sm" />
+                      <div>
+                        <Link href={`/catalog/${encodeURIComponent(item.productId)}`} className="font-display text-xl leading-tight transition-colors hover:text-accent-ink">
+                          {item.name}
+                        </Link>
+                        <div className="meta mt-1">{perUnit(item.unitOfMeasure)} · <span className="numeric">{item.sku}</span></div>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="whitespace-nowrap">{formatCents(item.priceCents)}</td>
+                  <td>
+                    <input
+                      type="number"
+                      min={0}
+                      value={item.quantity}
+                      onChange={(e) => cart.setQuantity(item.productId, Number(e.target.value) || 0)}
+                      className="input numeric w-20 text-center"
+                      aria-label={`Quantity of ${item.name}`}
+                    />
+                  </td>
+                  <td className="text-right font-medium whitespace-nowrap">{formatCents(item.priceCents * item.quantity)}</td>
+                  <td className="text-right">
+                    <button type="button" onClick={() => cart.remove(item.productId)} className="btn-ghost btn-sm text-danger-ink">
+                      Remove
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      <aside className="card h-fit space-y-4">
+      <aside className="card glass space-y-5 lg:sticky lg:top-[calc(var(--header-h)+1.5rem)]" aria-label="Order summary">
+        <p className="eyebrow">Summary</p>
         <div className="flex items-baseline justify-between">
-          <span className="text-neutral-600">Subtotal</span>
-          <span className="text-xl font-semibold">{formatCents(cart.subtotalCents)}</span>
+          <span className="text-fg-2">Subtotal</span>
+          <span className="price text-3xl">{formatCents(cart.subtotalCents)}</span>
         </div>
-        <p className="text-xs text-neutral-500">Delivery and applicable taxes are confirmed on your invoice.</p>
+        <p className="meta">Delivery and applicable taxes are confirmed on your invoice.</p>
 
         {!signedIn && (
           <div className="alert-info">
-            <Link href="/login?next=/cart" className="font-medium underline">Sign in</Link> to place a wholesale order, or{" "}
-            <Link href="/register" className="font-medium underline">apply for an account</Link>.
+            <Link href="/login?next=/cart" className="link font-medium">Sign in</Link> to place a wholesale order, or{" "}
+            <Link href="/register" className="link font-medium">apply for an account</Link>.
           </div>
         )}
         {signedIn && !canOrder && (
@@ -136,12 +141,10 @@ export function CartView({ signedIn, canOrder, accountStatus, stripeConfigured, 
               <textarea id="notes" className="input" rows={3} value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Dock hours, substitutions, PO number…" />
             </div>
             {!stripeConfigured && (
-              <p className="text-xs text-neutral-500">
-                Payments are not configured on this environment; the order will be recorded as pending payment.
-              </p>
+              <p className="meta">Payments are not configured on this environment; the order will be recorded as pending payment.</p>
             )}
-            {error && <p className="alert-error">{error}</p>}
-            <button type="button" onClick={placeOrder} disabled={submitting} className="btn-primary w-full">
+            {error && <p className="alert-error" role="alert">{error}</p>}
+            <button type="button" onClick={placeOrder} disabled={submitting} className="btn-primary btn-lg w-full">
               {submitting ? "Placing order…" : stripeConfigured ? "Continue to payment" : "Place order"}
             </button>
           </>

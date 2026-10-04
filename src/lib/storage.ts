@@ -1,11 +1,13 @@
 import "server-only";
-import { Storage } from "@google-cloud/storage";
-import { slugify } from "@/lib/catalog";
+import { Storage, type File as GcsFile } from "@google-cloud/storage";
+import { MEDIA_BUCKET } from "@/config/gcp";
+import { isAllowedMediaPath } from "@/lib/media";
 import { UserFacingError } from "@/lib/errors";
 
 /**
- * Product photos are uploaded to a Cloud Storage bucket with public read access
- * and served straight from storage.googleapis.com.
+ * Product photos live in a PRIVATE Cloud Storage bucket (public access prevention is on),
+ * at `products/{productId}/images/primary.{ext}`. Browsers never hit the bucket directly:
+ * the /media route handler streams objects through the app.
  */
 const ALLOWED_TYPES: Record<string, string> = {
   "image/jpeg": "jpg",
@@ -16,29 +18,70 @@ const MAX_BYTES = 5 * 1024 * 1024;
 
 let storageClient: Storage | undefined;
 
-export function isStorageConfigured(): boolean {
-  return Boolean(process.env.GCS_BUCKET);
-}
-
 function bucket() {
-  const name = process.env.GCS_BUCKET;
-  if (!name) throw new Error("GCS_BUCKET is not set. Photo uploads are disabled.");
   storageClient ??= new Storage();
-  return storageClient.bucket(name);
+  return storageClient.bucket(MEDIA_BUCKET);
 }
 
-export async function uploadProductImage(file: File, nameHint: string): Promise<string> {
+function httpCode(err: unknown): number | undefined {
+  return (err as { code?: number } | null)?.code;
+}
+
+/** Uploads the primary photo for a product and returns its object path. */
+export async function uploadProductImage(file: File, productId: string): Promise<string> {
   const ext = ALLOWED_TYPES[file.type];
   if (!ext) throw new UserFacingError("Photo must be a JPEG, PNG, or WebP image.");
   if (file.size > MAX_BYTES) throw new UserFacingError("Photo must be smaller than 5 MB.");
 
-  const objectName = `products/${slugify(nameHint) || "product"}-${Date.now()}.${ext}`;
+  const objectName = `products/${productId}/images/primary.${ext}`;
   const buffer = Buffer.from(await file.arrayBuffer());
-  const b = bucket();
-  await b.file(objectName).save(buffer, {
-    contentType: file.type,
-    resumable: false,
-    metadata: { cacheControl: "public, max-age=31536000" },
-  });
-  return `https://storage.googleapis.com/${b.name}/${objectName}`;
+  try {
+    await bucket().file(objectName).save(buffer, {
+      contentType: file.type,
+      resumable: false,
+      metadata: { cacheControl: "private, max-age=0" },
+    });
+  } catch (err) {
+    if (httpCode(err) === 403) {
+      throw new UserFacingError(
+        `This server can't write to gs://${MEDIA_BUCKET}. A project owner needs to grant its service account roles/storage.objectUser on that bucket.`,
+        503,
+      );
+    }
+    throw err;
+  }
+  return objectName;
+}
+
+export interface MediaObject {
+  file: GcsFile;
+  contentType: string;
+  size: number | undefined;
+  etag: string | undefined;
+}
+
+/**
+ * Looks up a product photo for streaming. Returns null when the path isn't allowed, the
+ * object doesn't exist, or this server isn't permitted to read the bucket.
+ */
+export async function openMediaObject(path: string): Promise<MediaObject | null> {
+  if (!isAllowedMediaPath(path)) return null;
+  const file = bucket().file(path);
+  try {
+    const [meta] = await file.getMetadata();
+    const size = meta.size === undefined ? undefined : Number(meta.size);
+    return {
+      file,
+      contentType: meta.contentType || "application/octet-stream",
+      size: Number.isFinite(size) ? size : undefined,
+      etag: meta.etag ? `"${meta.etag.replace(/"/g, "")}"` : undefined,
+    };
+  } catch (err) {
+    const code = httpCode(err);
+    if (code === 404 || code === 403 || code === 401) {
+      if (code !== 404) console.warn(`Media read denied for gs://${MEDIA_BUCKET}/${path} (${code}).`);
+      return null;
+    }
+    throw err;
+  }
 }

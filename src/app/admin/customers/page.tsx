@@ -1,14 +1,11 @@
+import Form from "next/form";
 import { listCustomers } from "@/lib/customers";
 import { customerStatusLabels, formatDate } from "@/lib/format";
 import { CustomerStatusButtons } from "@/components/admin/customer-status-buttons";
+import { CustomerStatusBadge } from "@/components/order-status-badge";
 import { Pagination } from "@/components/pagination";
+import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import type { CustomerStatus } from "@/generated/prisma/client";
-
-const statusColor: Record<string, string> = {
-  PENDING: "bg-amber-100 text-amber-800",
-  APPROVED: "bg-brand-100 text-brand-800",
-  SUSPENDED: "bg-red-100 text-red-800",
-};
 
 export default async function AdminCustomersPage(props: PageProps<"/admin/customers">) {
   const sp = await props.searchParams;
@@ -18,42 +15,47 @@ export default async function AdminCustomersPage(props: PageProps<"/admin/custom
   const { rows, total, pages } = await listCustomers({ page, q, status });
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-xl font-semibold">Customers</h2>
-        <form action="/admin/customers" method="get" className="flex flex-wrap gap-2">
-          <input name="q" defaultValue={q} placeholder="Search business, contact, email, city" className="input w-64" />
-          <select name="status" defaultValue={status ?? ""} className="input w-44">
-            <option value="">All statuses</option>
-            {Object.entries(customerStatusLabels).map(([k, label]) => <option key={k} value={k}>{label}</option>)}
-          </select>
-          <button className="btn-secondary" type="submit">Search</button>
-        </form>
-      </div>
+    <>
+      <AdminPageHeader
+        eyebrow="Accounts"
+        title="Customers"
+        actions={
+          <Form action="/admin/customers" className="flex flex-wrap gap-2">
+            <input name="q" defaultValue={q} placeholder="Business, contact, email, city" aria-label="Search customers" className="input w-64" />
+            <select name="status" defaultValue={status ?? ""} className="input w-44" aria-label="Filter by status">
+              <option value="">All statuses</option>
+              {Object.entries(customerStatusLabels).map(([k, label]) => <option key={k} value={k}>{label}</option>)}
+            </select>
+            <button className="btn-secondary" type="submit">Search</button>
+          </Form>
+        }
+      />
       <div className="card p-0">
-        <table className="table">
-          <thead><tr><th>Business</th><th>Contact</th><th>Location</th><th>Since</th><th>Status</th><th /></tr></thead>
-          <tbody>
-            {rows.map((c) => (
-              <tr key={c.id}>
-                <td className="font-medium">{c.businessName}</td>
-                <td>
-                  <div>{c.contactName}</div>
-                  <div className="text-xs text-neutral-500">{c.email}{c.phone ? ` · ${c.phone}` : ""}</div>
-                </td>
-                <td>{c.city}, {c.state}</td>
-                <td>{formatDate(c.createdAt)}</td>
-                <td><span className={`badge ${statusColor[c.status]}`}>{customerStatusLabels[c.status]}</span></td>
-                <td><CustomerStatusButtons customerId={c.id} status={c.status} /></td>
-              </tr>
-            ))}
-            {rows.length === 0 && <tr><td colSpan={6} className="py-6 text-center text-neutral-500">No customers match.</td></tr>}
-          </tbody>
-        </table>
-        <div className="p-4">
+        <div className="table-wrap">
+          <table className="table">
+            <thead><tr><th>Business</th><th>Contact</th><th>Location</th><th>Since</th><th>Status</th><th><span className="sr-only">Actions</span></th></tr></thead>
+            <tbody>
+              {rows.map((c) => (
+                <tr key={c.id}>
+                  <td className="font-medium">{c.businessName}</td>
+                  <td>
+                    <div>{c.contactName}</div>
+                    <div className="meta text-xs">{c.email}{c.phone ? ` · ${c.phone}` : ""}</div>
+                  </td>
+                  <td>{c.city}, {c.state}</td>
+                  <td className="whitespace-nowrap">{formatDate(c.createdAt)}</td>
+                  <td><CustomerStatusBadge status={c.status} /></td>
+                  <td><CustomerStatusButtons customerId={c.id} status={c.status} /></td>
+                </tr>
+              ))}
+              {rows.length === 0 && <tr><td colSpan={6} className="meta py-10 text-center">No customers match.</td></tr>}
+            </tbody>
+          </table>
+        </div>
+        <div className="border-t border-line p-5">
           <Pagination page={page} pages={pages} total={total} basePath="/admin/customers" query={{ q, status }} />
         </div>
       </div>
-    </div>
+    </>
   );
 }

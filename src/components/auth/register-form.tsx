@@ -25,7 +25,12 @@ export function RegisterForm() {
   const [busy, setBusy] = useState(false);
 
   if (!config) {
-    return <p className="alert-error">Registration is not configured (missing Firebase settings).</p>;
+    return (
+      <div className="alert-warning" role="status">
+        <p className="font-medium">Applications aren&apos;t open on this environment yet.</p>
+        <p className="mt-1 text-fg-2">It has no Firebase web app configured (FIREBASE_API_KEY and FIREBASE_APP_ID).</p>
+      </div>
+    );
   }
 
   const set = (k: string) => (e: { target: { value: string } }) => setValues((v) => ({ ...v, [k]: e.target.value }));
@@ -64,8 +69,8 @@ export function RegisterForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
-      <div className="grid gap-4 sm:grid-cols-2">
+    <form onSubmit={onSubmit} className="space-y-6">
+      <div className="grid gap-5 sm:grid-cols-2">
         <div>
           <label className="label" htmlFor="email">Work email</label>
           <input id="email" type="email" className="input" required autoComplete="email" value={values.email} onChange={set("email")} />
@@ -89,11 +94,11 @@ export function RegisterForm() {
           </div>
         ))}
       </div>
-      {error && <p className="alert-error">{error}</p>}
-      <button type="submit" disabled={busy} className="btn-primary w-full">
+      {error && <p className="alert-error" role="alert">{error}</p>}
+      <button type="submit" disabled={busy} className="btn-primary btn-lg w-full">
         {busy ? "Submitting…" : "Submit application"}
       </button>
-      <p className="text-xs text-neutral-500">
+      <p className="meta">
         Our team reviews new wholesale accounts within one business day. You can browse the catalog right away and order once approved.
       </p>
     </form>

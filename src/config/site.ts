@@ -5,10 +5,11 @@
 export const siteConfig = {
   name: "Prairie Crest Foods",
   shortName: "Prairie Crest",
-  tagline:
-    "Wholesale food distribution for restaurants, grocers, schools, and institutions across the Midwest.",
+  tagline: "Wholesale provisions for the Midwest's most exacting kitchens and grocers.",
   description:
-    "Prairie Crest Foods supplies dairy, frozen foods, beverages, produce, dry goods, and meat & seafood to over 10,000 wholesale customers.",
+    "Prairie Crest Foods supplies more than 10,000 wholesale customers across the Midwest, from chef-led restaurants to fine grocers.",
+  /** City shown in eyebrows; keep in step with `address`. */
+  city: "Des Moines, Iowa",
   supportEmail: "orders@prairiecrestfoods.example",
   supportPhone: "(515) 555-0142",
   address: "4120 Harvest Way, Des Moines, IA 50313",

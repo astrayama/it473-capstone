@@ -38,7 +38,7 @@ export async function POST(req: Request) {
         price_data: {
           currency: siteConfig.currency,
           unit_amount: item.casePriceCents,
-          product_data: { name: item.name, description: `${item.packSize} · SKU ${item.sku}` },
+          product_data: { name: item.name, description: `Per ${item.packSize} · ${item.sku}` },
         },
       })),
       success_url: `${base}/checkout/success?order=${order.id}`,

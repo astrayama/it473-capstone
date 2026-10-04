@@ -18,7 +18,8 @@ export function db(): PrismaClient {
   if (!connectionString) {
     throw new Error("DATABASE_URL is not set. See .env.example.");
   }
-  const adapter = new PrismaPg({ connectionString });
+  // Fail fast when Cloud SQL is stopped or unreachable instead of hanging the page.
+  const adapter = new PrismaPg({ connectionString, connectionTimeoutMillis: 5000 });
   const client = new PrismaClient({ adapter });
   globalForPrisma.__prisma = client;
   return client;

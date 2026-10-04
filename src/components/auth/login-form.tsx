@@ -16,9 +16,12 @@ export function LoginForm({ next }: { next: string }) {
 
   if (!config) {
     return (
-      <p className="alert-error">
-        Sign-in is not configured: set FIREBASE_API_KEY, FIREBASE_AUTH_DOMAIN, FIREBASE_PROJECT_ID and FIREBASE_APP_ID.
-      </p>
+      <div className="alert-warning" role="status">
+        <p className="font-medium">Sign-in isn&apos;t available yet.</p>
+        <p className="mt-1 text-fg-2">
+          This environment has no Firebase web app configured (FIREBASE_API_KEY and FIREBASE_APP_ID).
+        </p>
+      </div>
     );
   }
 
@@ -45,7 +48,7 @@ export function LoginForm({ next }: { next: string }) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
+    <form onSubmit={onSubmit} className="space-y-6">
       <div>
         <label className="label" htmlFor="email">Email</label>
         <input id="email" type="email" className="input" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
@@ -54,8 +57,8 @@ export function LoginForm({ next }: { next: string }) {
         <label className="label" htmlFor="password">Password</label>
         <input id="password" type="password" className="input" autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} />
       </div>
-      {error && <p className="alert-error">{error}</p>}
-      <button type="submit" disabled={busy} className="btn-primary w-full">
+      {error && <p className="alert-error" role="alert">{error}</p>}
+      <button type="submit" disabled={busy} className="btn-primary btn-lg w-full">
         {busy ? "Signing in…" : "Sign in"}
       </button>
     </form>
