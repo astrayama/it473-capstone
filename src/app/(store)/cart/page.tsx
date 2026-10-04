@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { canOrder, getSession } from "@/lib/auth";
-import { isStripeConfigured } from "@/lib/stripe";
+import { isStripeConfigured, isStripeTestMode } from "@/lib/stripe";
 import { CartView } from "@/components/cart/cart-view";
 import { SectionHeading } from "@/components/section-heading";
 import { PageTransition } from "@/components/page-transition";
@@ -20,6 +20,7 @@ export default async function CartPage(props: PageProps<"/cart">) {
             canOrder={canOrder(session)}
             accountStatus={session?.customer?.status ?? null}
             stripeConfigured={isStripeConfigured()}
+            stripeTestMode={isStripeTestMode()}
             cancelled={sp.cancelled === "1"}
           />
         </div>

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
+import { syncStripePayment } from "@/lib/orders";
 import { orderNumber } from "@/lib/format";
 import { OrderSummary } from "@/components/order-summary";
 import { OrderStatusSelect } from "@/components/admin/order-status-select";
@@ -9,8 +10,11 @@ import { ArrowLeft } from "@/components/icons";
 
 export default async function AdminOrderPage(props: PageProps<"/admin/orders/[id]">) {
   const { id } = await props.params;
-  const order = await db().order.findUnique({ where: { id }, include: { items: true, customer: true } });
-  if (!order) notFound();
+  const found = await db().order.findUnique({ where: { id }, include: { items: true, customer: true } });
+  if (!found) notFound();
+  const order = (await syncStripePayment(found))
+    ? (await db().order.findUnique({ where: { id }, include: { items: true, customer: true } }))!
+    : found;
 
   return (
     <>

@@ -193,8 +193,11 @@ npm run dev                                  # http://localhost:3000
 
 Add `localhost` to Firebase *Authorized domains* (it is there by default).
 
-To test Stripe webhooks locally: `stripe listen --forward-to localhost:3000/api/webhooks/stripe`
-and put the printed `whsec_` in `.env`.
+To test payments locally, put a Stripe **test** key (`sk_test_…`) in `.env` as
+`STRIPE_SECRET_KEY`. The cart then shows the test card (`4242 4242 4242 4242`), and the
+confirmation page confirms the payment with Stripe directly, so webhooks are optional locally.
+To exercise the webhook too: `stripe listen --forward-to localhost:3000/api/webhooks/stripe`
+and put the printed `whsec_` in `.env` as `STRIPE_WEBHOOK_SECRET`.
 
 ## Changing the database schema
 

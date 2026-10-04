@@ -95,10 +95,14 @@ to guests.
 
 **Order.** The cart lives in `localStorage`. `/api/checkout` re-loads every product from
 Firestore (never trusting client prices), checks stock, writes the `Order` + `OrderItem`s in
-one transaction, and creates a Stripe Checkout session with `metadata.orderId`. Stripe
-redirects back to `/checkout/success`. Stripe calls `/api/webhooks/stripe`
-(`checkout.session.completed`) → `markOrderPaid()` sets PAID and decrements stock in a
-transaction. If `STRIPE_SECRET_KEY` is unset (e.g. a dev environment), checkout skips Stripe
+one transaction, and creates a Stripe Checkout session with `metadata.orderId` (line items
+carry the product photo when the site is public, plus pack size and SKU). Stripe redirects back
+to `/checkout/success`, which asks Stripe directly whether the session is paid
+(`syncStripePayment()`) so the buyer sees "Paid" without waiting; the order pages do the same.
+Stripe also calls `/api/webhooks/stripe` (`checkout.session.completed`) → `markOrderPaid()`
+sets PAID and decrements stock in a transaction. Both paths are idempotent, so whichever
+arrives first wins. `checkout.session.expired` cancels an unpaid order. The browser cart is
+emptied on the confirmation page, so backing out of Stripe Checkout keeps the cart. If `STRIPE_SECRET_KEY` is unset (e.g. a dev environment), checkout skips Stripe
 and leaves the order in PENDING_PAYMENT; staff can mark it PAID from the admin, which runs the
 same stock deduction.
 

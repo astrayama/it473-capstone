@@ -12,10 +12,12 @@ interface Props {
   canOrder: boolean;
   accountStatus: string | null;
   stripeConfigured: boolean;
+  /** Stripe test-mode key: show the test card so demos don't stall. */
+  stripeTestMode?: boolean;
   cancelled?: boolean;
 }
 
-export function CartView({ signedIn, canOrder, accountStatus, stripeConfigured, cancelled }: Props) {
+export function CartView({ signedIn, canOrder, accountStatus, stripeConfigured, stripeTestMode = false, cancelled }: Props) {
   const cart = useCart();
   const [notes, setNotes] = useState("");
   const [deliveryDate, setDeliveryDate] = useState("");
@@ -37,7 +39,7 @@ export function CartView({ signedIn, canOrder, accountStatus, stripeConfigured, 
       });
       const data = (await res.json()) as { url?: string; error?: string };
       if (!res.ok || !data.url) throw new Error(data.error ?? "Could not place the order.");
-      cart.clear();
+      // The cart is cleared on the confirmation page, so backing out of Stripe keeps it.
       window.location.href = data.url;
     } catch (err) {
       setError((err as Error).message);
@@ -140,6 +142,12 @@ export function CartView({ signedIn, canOrder, accountStatus, stripeConfigured, 
               <label className="label" htmlFor="notes">Order notes (optional)</label>
               <textarea id="notes" className="input" rows={3} value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Dock hours, substitutions, PO number…" />
             </div>
+            {stripeConfigured && stripeTestMode && (
+              <p className="alert-info text-xs leading-5">
+                Stripe test mode: no real charges. Pay with card <span className="numeric font-medium">4242 4242 4242 4242</span>, any
+                future expiry and any CVC.
+              </p>
+            )}
             {!stripeConfigured && (
               <p className="meta">Payments are not configured on this environment; the order will be recorded as pending payment.</p>
             )}

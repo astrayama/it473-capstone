@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { getProductsByIds } from "@/lib/catalog";
 import { getInventoryMap } from "@/lib/inventory";
 import { siteConfig } from "@/config/site";
+import { getCheckoutPayment, isStripeConfigured } from "@/lib/stripe";
 import { UserFacingError } from "@/lib/errors";
 import type { OrderStatus, Prisma } from "@/generated/prisma/client";
 
@@ -97,6 +98,28 @@ export async function markOrderPaid(
       },
     });
   });
+}
+
+/**
+ * If an order is still waiting for payment but its Stripe Checkout Session has been paid,
+ * marks it paid now (same path as the webhook, so running both is safe). Returns whether
+ * anything changed. Stripe errors are logged and ignored: the webhook will catch up.
+ */
+export async function syncStripePayment(order: {
+  id: string;
+  status: OrderStatus;
+  stripeCheckoutSessionId: string | null;
+}): Promise<boolean> {
+  if (order.status !== "PENDING_PAYMENT" || !order.stripeCheckoutSessionId || !isStripeConfigured()) return false;
+  try {
+    const payment = await getCheckoutPayment(order.stripeCheckoutSessionId);
+    if (!payment.paid) return false;
+    await markOrderPaid(order.id, payment);
+    return true;
+  } catch (err) {
+    console.warn(`Could not confirm Stripe payment for order ${order.id}:`, (err as Error).message);
+    return false;
+  }
 }
 
 export async function setOrderStatus(orderId: string, status: OrderStatus): Promise<void> {

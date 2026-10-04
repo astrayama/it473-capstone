@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireSession } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { syncStripePayment } from "@/lib/orders";
 import { OrderSummary } from "@/components/order-summary";
 import { ArrowLeft } from "@/components/icons";
 import { PageTransition } from "@/components/page-transition";
@@ -9,8 +10,11 @@ import { PageTransition } from "@/components/page-transition";
 export default async function AccountOrderPage(props: PageProps<"/account/orders/[id]">) {
   const { id } = await props.params;
   const session = await requireSession(`/account/orders/${id}`);
-  const order = await db().order.findUnique({ where: { id }, include: { items: true, customer: true } });
-  if (!order || order.customerId !== session.customer?.id) notFound();
+  const found = await db().order.findUnique({ where: { id }, include: { items: true, customer: true } });
+  if (!found || found.customerId !== session.customer?.id) notFound();
+  const order = (await syncStripePayment(found))
+    ? (await db().order.findUnique({ where: { id }, include: { items: true, customer: true } }))!
+    : found;
 
   return (
     <PageTransition>
