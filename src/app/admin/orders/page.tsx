@@ -19,8 +19,8 @@ export default async function AdminOrdersPage(props: PageProps<"/admin/orders">)
         eyebrow="Fulfilment"
         title="Orders"
         actions={
-          <Form action="/admin/orders" className="flex gap-2">
-            <select name="status" defaultValue={status ?? ""} className="input w-48" aria-label="Filter by status">
+          <Form action="/admin/orders" className="flex w-full gap-2 sm:w-auto">
+            <select name="status" defaultValue={status ?? ""} className="input min-w-0 flex-1 sm:w-48 sm:flex-none" aria-label="Filter by status">
               <option value="">All statuses</option>
               {Object.entries(orderStatusLabels).map(([k, label]) => <option key={k} value={k}>{label}</option>)}
             </select>
@@ -30,17 +30,17 @@ export default async function AdminOrdersPage(props: PageProps<"/admin/orders">)
       />
       <div className="card p-0">
         <div className="table-wrap">
-          <table className="table">
+          <table className="table table-stack">
             <thead><tr><th>Order</th><th>Customer</th><th>Placed</th><th>Delivery</th><th>Status</th><th className="text-right">Total</th></tr></thead>
             <tbody>
               {rows.map((o) => (
                 <tr key={o.id}>
                   <td><Link href={`/admin/orders/${o.id}`} className="link numeric font-medium">{orderNumber(o.orderNumber)}</Link></td>
-                  <td>{o.customer.businessName}</td>
-                  <td className="whitespace-nowrap">{formatDateTime(o.createdAt)}</td>
-                  <td className="whitespace-nowrap">{o.requestedDeliveryDate ? formatDate(o.requestedDeliveryDate) : "—"}</td>
-                  <td><OrderStatusBadge status={o.status} /></td>
-                  <td className="text-right">{formatCents(o.totalCents)}</td>
+                  <td data-label="Customer">{o.customer.businessName}</td>
+                  <td data-label="Placed" className="whitespace-nowrap">{formatDateTime(o.createdAt)}</td>
+                  <td data-label="Delivery" className="whitespace-nowrap">{o.requestedDeliveryDate ? formatDate(o.requestedDeliveryDate) : "—"}</td>
+                  <td data-label="Status"><OrderStatusBadge status={o.status} /></td>
+                  <td data-label="Total" className="text-right">{formatCents(o.totalCents)}</td>
                 </tr>
               ))}
               {rows.length === 0 && <tr><td colSpan={6} className="meta py-10 text-center">No orders.</td></tr>}

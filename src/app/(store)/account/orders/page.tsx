@@ -23,16 +23,16 @@ export default async function AccountOrdersPage(props: PageProps<"/account/order
       <div className="container-page py-16 md:py-20">
         <SectionHeading as="h1" size="l" eyebrow="Your account" title="Order history" />
         <div className="table-wrap mt-12">
-          <table className="table">
+          <table className="table table-stack">
             <thead><tr><th>Order</th><th>Placed</th><th>Units</th><th>Status</th><th className="text-right">Total</th></tr></thead>
             <tbody>
               {rows.map((o) => (
                 <tr key={o.id}>
                   <td><Link href={`/account/orders/${o.id}`} className="link numeric font-medium">{orderNumber(o.orderNumber)}</Link></td>
-                  <td>{formatDateTime(o.createdAt)}</td>
-                  <td>{o.items.reduce((n, i) => n + i.quantity, 0)}</td>
-                  <td><OrderStatusBadge status={o.status} /></td>
-                  <td className="text-right">{formatCents(o.totalCents)}</td>
+                  <td data-label="Placed">{formatDateTime(o.createdAt)}</td>
+                  <td data-label="Units">{o.items.reduce((n, i) => n + i.quantity, 0)}</td>
+                  <td data-label="Status"><OrderStatusBadge status={o.status} /></td>
+                  <td data-label="Total" className="text-right">{formatCents(o.totalCents)}</td>
                 </tr>
               ))}
               {rows.length === 0 && (

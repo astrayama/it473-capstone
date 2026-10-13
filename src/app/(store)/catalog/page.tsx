@@ -52,7 +52,8 @@ export default async function CatalogPage(props: PageProps<"/catalog">) {
           lede={current?.description || "Everything we carry, sold to the trade by the case, pack or bag."}
         />
 
-        <div className="glass sticky top-[calc(var(--header-h)+0.75rem)] z-30 mt-12 flex flex-col gap-3 rounded-lg border border-line p-3 md:flex-row md:items-center md:justify-between">
+        {/* Sticky from md up only: on phones the two-row panel would pin a fifth of the screen. */}
+        <div className="glass mt-12 flex flex-col gap-3 rounded-lg border border-line p-3 md:sticky md:top-[calc(var(--header-h)+0.75rem)] md:z-30 md:flex-row md:items-center md:justify-between">
           <nav aria-label="Categories" className="-mx-1 flex gap-2 overflow-x-auto px-1">
             <Link href={chipHref("")} className={chip(!category)} aria-current={!category ? "page" : undefined}>All</Link>
             {categories.map((c) => (

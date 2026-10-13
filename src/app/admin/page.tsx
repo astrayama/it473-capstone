@@ -40,22 +40,22 @@ export default async function AdminDashboard() {
       </div>
 
       <div className="mt-10 grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_17rem]">
-        <section className="card p-0">
+        <section className="card min-w-0 p-0">
           <div className="flex items-center justify-between px-6 pt-6 pb-2">
             <h2 className="text-title-m">Latest orders</h2>
             <Link href="/admin/orders" className="link text-sm text-fg-2">All orders</Link>
           </div>
           <div className="table-wrap">
-            <table className="table">
+            <table className="table table-stack">
               <thead><tr><th>Order</th><th>Customer</th><th>Placed</th><th>Status</th><th className="text-right">Total</th></tr></thead>
               <tbody>
                 {recent.rows.slice(0, 8).map((o) => (
                   <tr key={o.id}>
                     <td><Link href={`/admin/orders/${o.id}`} className="link numeric font-medium">{orderNumber(o.orderNumber)}</Link></td>
-                    <td>{o.customer.businessName}</td>
-                    <td className="whitespace-nowrap">{formatDateTime(o.createdAt)}</td>
-                    <td><OrderStatusBadge status={o.status} /></td>
-                    <td className="text-right">{formatCents(o.totalCents)}</td>
+                    <td data-label="Customer">{o.customer.businessName}</td>
+                    <td data-label="Placed" className="whitespace-nowrap">{formatDateTime(o.createdAt)}</td>
+                    <td data-label="Status"><OrderStatusBadge status={o.status} /></td>
+                    <td data-label="Total" className="text-right">{formatCents(o.totalCents)}</td>
                   </tr>
                 ))}
                 {recent.rows.length === 0 && <tr><td colSpan={5} className="meta py-8 text-center">No orders yet.</td></tr>}

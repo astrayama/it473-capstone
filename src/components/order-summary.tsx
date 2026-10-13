@@ -4,7 +4,7 @@ import type { OrderWithItems } from "@/lib/orders";
 
 export function OrderSummary({ order, showCustomer = false }: { order: OrderWithItems; showCustomer?: boolean }) {
   return (
-    <div className="card space-y-6">
+    <div className="card min-w-0 space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 className="text-title-m">Order <span className="numeric">{orderNumber(order.orderNumber)}</span></h2>
@@ -27,7 +27,7 @@ export function OrderSummary({ order, showCustomer = false }: { order: OrderWith
         </div>
       )}
       <div className="table-wrap">
-        <table className="table">
+        <table className="table table-stack">
           <thead>
             <tr><th>Item</th><th>Price</th><th>Qty</th><th className="text-right">Total</th></tr>
           </thead>
@@ -38,9 +38,9 @@ export function OrderSummary({ order, showCustomer = false }: { order: OrderWith
                   <div className="font-medium">{i.name}</div>
                   <div className="meta">{perUnit(i.packSize)} · <span className="numeric">{i.sku}</span></div>
                 </td>
-                <td>{formatCents(i.casePriceCents)}</td>
-                <td>{i.quantity}</td>
-                <td className="text-right">{formatCents(i.lineTotalCents)}</td>
+                <td data-label="Price">{formatCents(i.casePriceCents)}</td>
+                <td data-label="Qty">{i.quantity}</td>
+                <td data-label="Total" className="text-right">{formatCents(i.lineTotalCents)}</td>
               </tr>
             ))}
           </tbody>

@@ -27,7 +27,7 @@ export default async function AdminInventoryPage() {
       />
       <div className="card p-0">
         <div className="table-wrap">
-          <table className="table">
+          <table className="table table-stack">
             <thead>
               <tr><th>SKU</th><th>Product</th><th>On hand</th><th>Alert at</th><th>Bin</th><th><span className="sr-only">State</span></th><th><span className="sr-only">Save</span></th></tr>
             </thead>

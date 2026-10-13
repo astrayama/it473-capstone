@@ -42,7 +42,7 @@ export function AddToCartButton({ item, maxQuantity, showQuantity = false }: Pro
             max={max}
             value={qty}
             onChange={(e) => setQty(clamp(Number(e.target.value)))}
-            className="numeric w-12 bg-transparent text-center text-sm outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none"
+            className="numeric w-12 bg-transparent text-center text-base outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none"
             aria-label={`Quantity (${item.unitOfMeasure})`}
           />
           <button type="button" className="btn-ghost rounded-full px-3 py-3" onClick={() => setQty((q) => clamp(q + 1))} aria-label="One more">

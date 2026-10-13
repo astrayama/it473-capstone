@@ -55,10 +55,10 @@ export function CartView({ signedIn, canOrder, accountStatus, stripeConfigured, 
 
   return (
     <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_22rem]">
-      <div>
+      <div className="min-w-0">
         {cancelled && <p className="alert-info mb-6">Payment was cancelled. Your order is still here.</p>}
         <div className="table-wrap">
-          <table className="table">
+          <table className="table table-stack">
             <thead>
               <tr>
                 <th>Item</th>
@@ -82,8 +82,8 @@ export function CartView({ signedIn, canOrder, accountStatus, stripeConfigured, 
                       </div>
                     </div>
                   </td>
-                  <td className="whitespace-nowrap">{formatCents(item.priceCents)}</td>
-                  <td>
+                  <td data-label="Price" className="whitespace-nowrap">{formatCents(item.priceCents)}</td>
+                  <td data-label="Qty">
                     <input
                       type="number"
                       min={0}
@@ -93,9 +93,9 @@ export function CartView({ signedIn, canOrder, accountStatus, stripeConfigured, 
                       aria-label={`Quantity of ${item.name}`}
                     />
                   </td>
-                  <td className="text-right font-medium whitespace-nowrap">{formatCents(item.priceCents * item.quantity)}</td>
+                  <td data-label="Total" className="text-right font-medium whitespace-nowrap">{formatCents(item.priceCents * item.quantity)}</td>
                   <td className="text-right">
-                    <button type="button" onClick={() => cart.remove(item.productId)} className="btn-ghost btn-sm text-danger-ink">
+                    <button type="button" onClick={() => cart.remove(item.productId)} className="btn-ghost btn-sm text-danger-ink max-sm:-mr-4">
                       Remove
                     </button>
                   </td>

@@ -45,15 +45,15 @@ export function InventoryRow(props: Props) {
 
   return (
     <tr className={low ? "bg-warning-wash" : ""}>
-      <td className="numeric text-xs tracking-[0.06em] text-fg-2">{props.sku}</td>
-      <td className="font-medium">{props.name}</td>
-      <td>
+      <td data-label="SKU" className="numeric text-xs tracking-[0.06em] text-fg-2">{props.sku}</td>
+      <td className="font-medium max-sm:order-first">{props.name}</td>
+      <td data-label="On hand">
         <input type="number" min={0} className="input numeric w-24" value={qty} onChange={(e) => setQty(Number(e.target.value) || 0)} aria-label="On hand" />
       </td>
-      <td>
+      <td data-label="Alert at">
         <input type="number" min={0} className="input numeric w-24" value={reorder} onChange={(e) => setReorder(Number(e.target.value) || 0)} aria-label="Low-stock alert" />
       </td>
-      <td>
+      <td data-label="Bin">
         <input className="input numeric w-24" value={bin} onChange={(e) => setBin(e.target.value)} aria-label="Bin" />
       </td>
       <td>
