@@ -315,8 +315,9 @@
     @apply mb-2 block text-eyebrow font-medium tracking-label uppercase;
     color: var(--fg-2);
   }
+  /* 16px on phones: iOS Safari zooms the page into any field set smaller than that. */
   .input {
-    @apply w-full rounded-xs px-3.5 py-2.5 text-[0.9375rem] outline-none;
+    @apply w-full rounded-xs px-3.5 py-2.5 text-base outline-none sm:text-[0.9375rem];
     background: var(--input-bg);
     color: var(--fg);
     border: 1px solid var(--line-strong);
@@ -399,6 +400,43 @@
   }
   .table tfoot td {
     border-bottom: 0;
+  }
+
+  /* Phones: `.table-stack` turns each row into a stacked block. A cell without a label is the
+     row's heading; a cell with data-label="…" becomes a "LABEL ……… value" line. Cells that
+     render nothing are dropped. */
+  @media (width < 40rem) {
+    .table-stack,
+    .table-stack tbody,
+    .table-stack tfoot {
+      display: block;
+    }
+    .table-stack thead {
+      @apply sr-only;
+    }
+    .table-stack tr {
+      @apply flex flex-col gap-2 px-4 py-4;
+      border-bottom: 1px solid var(--line);
+    }
+    .table-stack td {
+      @apply p-0 break-words;
+      border-bottom: 0;
+    }
+    .table-stack td:empty {
+      display: none;
+    }
+    .table-stack td[data-label] {
+      @apply flex flex-wrap items-center justify-end gap-x-1.5 gap-y-1 text-right;
+    }
+    .table-stack td[data-label]::before {
+      content: attr(data-label);
+      @apply mr-auto pr-4 text-left text-[0.6875rem] font-medium tracking-label uppercase;
+      color: var(--fg-3);
+    }
+    .table-stack tfoot tr {
+      @apply flex-row items-baseline justify-between;
+      border-bottom: 0;
+    }
   }
 
   /* Alerts */

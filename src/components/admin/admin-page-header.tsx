@@ -14,7 +14,7 @@ export function AdminPageHeader({ eyebrow, title, description, actions }: {
         <h1 className="display-s">{title}</h1>
         {description && <p className="mt-2 max-w-2xl text-sm text-fg-2">{description}</p>}
       </div>
-      {actions && <div className="flex flex-wrap items-center gap-3">{actions}</div>}
+      {actions && <div className="flex w-full flex-wrap items-center gap-3 sm:w-auto">{actions}</div>}
     </div>
   );
 }

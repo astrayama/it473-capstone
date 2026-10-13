@@ -59,7 +59,7 @@ export default async function AccountPage(props: PageProps<"/account">) {
             <div>{customer.city}, {customer.state} {customer.postalCode}</div>
             {customer.phone && <div className="mt-3 text-fg-2">{customer.phone}</div>}
           </div>
-          <div>
+          <div className="min-w-0">
             <div className="flex items-center justify-between">
               <h2 className="text-title-m">Recent orders</h2>
               <Link href="/account/orders" className="link text-sm text-fg-2">All orders</Link>
@@ -68,15 +68,15 @@ export default async function AccountPage(props: PageProps<"/account">) {
               <p className="meta mt-6">No orders yet.</p>
             ) : (
               <div className="table-wrap mt-4">
-                <table className="table">
+                <table className="table table-stack">
                   <thead><tr><th>Order</th><th>Placed</th><th>Status</th><th className="text-right">Total</th></tr></thead>
                   <tbody>
                     {recent.slice(0, 5).map((o) => (
                       <tr key={o.id}>
                         <td><Link href={`/account/orders/${o.id}`} className="link numeric font-medium">{orderNumber(o.orderNumber)}</Link></td>
-                        <td>{formatDateTime(o.createdAt)}</td>
-                        <td><OrderStatusBadge status={o.status} /></td>
-                        <td className="text-right">{formatCents(o.totalCents)}</td>
+                        <td data-label="Placed">{formatDateTime(o.createdAt)}</td>
+                        <td data-label="Status"><OrderStatusBadge status={o.status} /></td>
+                        <td data-label="Total" className="text-right">{formatCents(o.totalCents)}</td>
                       </tr>
                     ))}
                   </tbody>

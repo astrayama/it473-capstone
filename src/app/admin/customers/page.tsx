@@ -20,9 +20,9 @@ export default async function AdminCustomersPage(props: PageProps<"/admin/custom
         eyebrow="Accounts"
         title="Customers"
         actions={
-          <Form action="/admin/customers" className="flex flex-wrap gap-2">
-            <input name="q" defaultValue={q} placeholder="Business, contact, email, city" aria-label="Search customers" className="input w-64" />
-            <select name="status" defaultValue={status ?? ""} className="input w-44" aria-label="Filter by status">
+          <Form action="/admin/customers" className="flex w-full flex-wrap gap-2 sm:w-auto">
+            <input name="q" defaultValue={q} placeholder="Business, contact, email, city" aria-label="Search customers" className="input sm:w-64" />
+            <select name="status" defaultValue={status ?? ""} className="input min-w-0 flex-1 sm:w-44 sm:flex-none" aria-label="Filter by status">
               <option value="">All statuses</option>
               {Object.entries(customerStatusLabels).map(([k, label]) => <option key={k} value={k}>{label}</option>)}
             </select>
@@ -32,19 +32,21 @@ export default async function AdminCustomersPage(props: PageProps<"/admin/custom
       />
       <div className="card p-0">
         <div className="table-wrap">
-          <table className="table">
+          <table className="table table-stack">
             <thead><tr><th>Business</th><th>Contact</th><th>Location</th><th>Since</th><th>Status</th><th><span className="sr-only">Actions</span></th></tr></thead>
             <tbody>
               {rows.map((c) => (
                 <tr key={c.id}>
                   <td className="font-medium">{c.businessName}</td>
-                  <td>
-                    <div>{c.contactName}</div>
-                    <div className="meta text-xs">{c.email}{c.phone ? ` · ${c.phone}` : ""}</div>
+                  <td data-label="Contact">
+                    <div>
+                      <div>{c.contactName}</div>
+                      <div className="meta text-xs">{c.email}{c.phone ? ` · ${c.phone}` : ""}</div>
+                    </div>
                   </td>
-                  <td>{c.city}, {c.state}</td>
-                  <td className="whitespace-nowrap">{formatDate(c.createdAt)}</td>
-                  <td><CustomerStatusBadge status={c.status} /></td>
+                  <td data-label="Location">{c.city}, {c.state}</td>
+                  <td data-label="Since" className="whitespace-nowrap">{formatDate(c.createdAt)}</td>
+                  <td data-label="Status"><CustomerStatusBadge status={c.status} /></td>
                   <td><CustomerStatusButtons customerId={c.id} status={c.status} /></td>
                 </tr>
               ))}

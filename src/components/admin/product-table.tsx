@@ -36,7 +36,7 @@ export function ProductTable({ rows }: { rows: ProductRow[] }) {
         <span className="meta numeric">{filtered.length} of {rows.length}</span>
       </div>
       <div className="table-wrap">
-        <table className="table">
+        <table className="table table-stack">
           <thead>
             <tr>
               <th>Product</th>
@@ -59,12 +59,12 @@ export function ProductTable({ rows }: { rows: ProductRow[] }) {
                       <span className="font-medium">{r.name}</span>
                     </div>
                   </td>
-                  <td className="numeric text-xs tracking-[0.06em] text-fg-2">{r.sku}</td>
-                  <td>{r.categoryLabel}</td>
-                  <td className="whitespace-nowrap">
-                    {r.priceCents > 0 ? formatCents(r.priceCents) : "—"} <span className="meta">{perUnit(r.unitOfMeasure)}</span>
+                  <td data-label="SKU" className="numeric text-xs tracking-[0.06em] text-fg-2">{r.sku}</td>
+                  <td data-label="Category">{r.categoryLabel}</td>
+                  <td data-label="Price" className="whitespace-nowrap">
+                    <span>{r.priceCents > 0 ? formatCents(r.priceCents) : "—"} <span className="meta">{perUnit(r.unitOfMeasure)}</span></span>
                   </td>
-                  <td>
+                  <td data-label="On hand">
                     {r.quantityOnHand === null ? (
                       <span className="meta">—</span>
                     ) : low ? (
@@ -73,7 +73,7 @@ export function ProductTable({ rows }: { rows: ProductRow[] }) {
                       <span className="numeric">{r.quantityOnHand}</span>
                     )}
                   </td>
-                  <td>
+                  <td data-label="Status">
                     <span className={`badge badge-dot ${r.active ? "badge-success" : "badge-neutral"}`}>{r.active ? "Visible" : "Archived"}</span>
                   </td>
                   <td className="text-right">

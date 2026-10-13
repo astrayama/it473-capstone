@@ -9,7 +9,7 @@ export function CartLink() {
   return (
     <Link
       href="/cart"
-      className="relative inline-flex items-center gap-2 text-sm text-fg-2 transition-colors hover:text-fg"
+      className="relative -m-3 inline-flex items-center gap-2 rounded-full p-3 text-sm text-fg-2 transition-colors hover:text-fg"
       aria-label={count ? `Your order, ${count} ${count === 1 ? "unit" : "units"}` : "Your order"}
     >
       <Crate />

@@ -124,8 +124,8 @@ export function HeaderShell({ account }: { account: HeaderAccount | null }) {
               </>
             )}
             <div className="rule mt-10 pt-6 text-sm text-fg-2">
-              <p>{siteConfig.supportPhone}</p>
-              <p>{siteConfig.supportEmail}</p>
+              <p><a href={`tel:${siteConfig.supportPhone.replace(/[^\d+]/g, "")}`} className="inline-block py-1.5">{siteConfig.supportPhone}</a></p>
+              <p><a href={`mailto:${siteConfig.supportEmail}`} className="inline-block py-1.5">{siteConfig.supportEmail}</a></p>
             </div>
           </nav>
         </div>
