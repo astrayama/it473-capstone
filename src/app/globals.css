@@ -636,17 +636,20 @@
       translate var(--dur-slow) var(--ease-out-expo),
       box-shadow var(--dur-slow) var(--ease-out-expo);
   }
-  .card-media::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background: linear-gradient(115deg, transparent 35%, rgb(221 190 127 / 0.2) 50%, transparent 65%);
-    mix-blend-mode: screen;
-    transform: translateX(-120%);
-    transition: transform 1.2s var(--ease-out-expo);
-  }
   @media (hover: hover) {
+    /* The sheen waits off-card on a transform. Inside a running .reveal that resting transform
+       stops iOS WebKit painting the whole card (blank cards on iPhone), so the layer only exists
+       where hover does; touch screens never showed it anyway. */
+    .card-media::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(115deg, transparent 35%, rgb(221 190 127 / 0.2) 50%, transparent 65%);
+      mix-blend-mode: screen;
+      transform: translateX(-120%);
+      transition: transform 1.2s var(--ease-out-expo);
+    }
     .product-card:hover .card-media {
       translate: 0 -6px;
       box-shadow: var(--elev-lift);
@@ -669,6 +672,16 @@
       animation: pc-reveal linear both;
       animation-timeline: view();
       animation-range: entry calc(var(--i, 0) * 8%) entry calc(70% + var(--i, 0) * 8%);
+    }
+    /* Phones: the category row scrolls sideways, so view() would track the row (which never
+       scrolls vertically) and freeze its later tiles part-faded. Time them on the row instead. */
+    @media (width < 40rem) {
+      .reveal-row {
+        view-timeline-name: --reveal-row;
+      }
+      .reveal-row > .reveal {
+        animation-timeline: --reveal-row;
+      }
     }
     .parallax > * {
       animation: pc-drift linear both;
