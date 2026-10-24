@@ -90,7 +90,9 @@ export default async function HomePage() {
           </section>
         )}
 
-        <section aria-labelledby="how-title" className="relative isolate overflow-hidden py-28 md:py-40">
+        {/* overflow-clip, not -hidden: a scroll container here would time the view() reveals and
+            parallax below against the section, which never scrolls, instead of the page. */}
+        <section aria-labelledby="how-title" className="relative isolate overflow-clip py-28 md:py-40">
           <div className="parallax absolute inset-0 -z-10">
             <Photo photo={photos.delivery} decorative sizes="100vw" className="absolute -inset-y-[12%] inset-x-0" />
           </div>
