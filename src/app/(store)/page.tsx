@@ -79,7 +79,7 @@ export default async function HomePage() {
               />
             </div>
             <div className="container-page mt-14">
-              <div className="-mx-5 flex snap-x snap-mandatory gap-5 overflow-x-auto px-5 pb-4 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 lg:grid-cols-3">
+              <div className="reveal-row -mx-5 flex snap-x snap-mandatory gap-5 overflow-x-auto px-5 pb-4 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 lg:grid-cols-3">
                 {categories.map((c, i) => (
                   <div key={c.id} className="reveal w-[82vw] shrink-0 snap-start sm:w-auto" style={stagger(i)}>
                     <CategoryTile category={c} index={i} />
